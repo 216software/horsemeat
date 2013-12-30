@@ -20,14 +20,4 @@ setup(
         'psycopg2',
         'Werkzeug',
     ],
-
-    scripts=[
-        'horsemeat/scripts/run-dev-webapp',
-        'horsemeat/scripts/run-prod-webapp',
-    ],
-
-    entry_points={
-        'console_scripts': [
-        ],
-    },
 )

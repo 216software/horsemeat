@@ -2,10 +2,5 @@
 *.pyc
 .vagrant
 .~lock*
-python-code/Gamechanger.egg-info
-python-code/gamechanger/configs/yaml_files/test.yaml
 .coverage
-python-code/gamechanger/webapp/static/dbdumps/
-python-code/build/
-python-code/dist/Gamechanger-0.0.1-py2.7.egg
-python-code/gamechanger/build/
+horsemeat.egg-info
