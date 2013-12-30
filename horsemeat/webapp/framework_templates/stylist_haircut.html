@@ -1,0 +1,160 @@
+{% extends "framework_templates/base.html" %}
+{%block title %}Sweet 'fro dude{% endblock %}
+{% block scripts %}
+
+<script language='javascript'>
+
+  /* Place the selected image in the big display (cover photo)
+     spot on the page
+  */
+
+  function set_picture_class()
+  {
+
+      /*
+         if we have a wide picture, set the images class to
+         the wide picture class, otherwise, use the skinny
+         picture class
+       */
+      var hair_cover = $("#haircut_cover");
+      if (hair_cover.width() > hair_cover.height())
+      {
+         hair_cover.attr("class", "haircut_cover_wide");
+      }
+      else
+      {
+         hair_cover.attr("class", "haircut_cover_skinny");
+      }
+  }
+  $(window).load(function(){set_picture_class()});
+
+  $(document).ready(function()
+  {
+     //set up the what this haircut is rated.
+     //We should display an amount of scissors
+     //equal to the rating of the haircut
+
+     //If we get a haircut rating of 0, then
+     //we don't have a rating yet
+     var current_rating = {{haircut_rating}};
+     var haircut_id = {{haircut_id}};
+
+     //set the current rating
+     $("img.rate_item:lt("+current_rating+")").attr("src", "/static/imgs/scissors-gold.png");
+     $("img.rate_item:eq("+current_rating+")").attr("src", "/static/imgs/scissors-grey.png");
+     $("img.rate_item:gt("+current_rating+")").attr("src", "/static/imgs/scissors-grey.png");
+
+     $("a[switch-image]").click(function(e)
+     {
+       var hair_cover = $("#haircut_cover");
+       var new_src = this.attributes['switch-image'].value;
+       hair_cover.attr("src", new_src);
+       set_picture_class();
+     });
+
+
+     $("img.rate_item").click(function(e)
+     {
+        var index = $('img.rate_item').index(e.currentTarget);
+        $("img.rate_item:lt("+index+")").attr("src", "/static/imgs/scissors-gold.png");
+        $("img.rate_item:eq("+index+")").attr("src", "/static/imgs/scissors-gold.png");
+
+        $("img.rate_item:gt("+index+")").attr("src", "/static/imgs/scissors-grey.png");
+        current_rating = index + 1;
+
+        //now update database with current rating and haircut
+        $.ajax(
+        {
+          url:'sethaircutrating',
+          type:'POST',
+          data:{haircut_id:haircut_id,rating:current_rating},
+        })
+        //use jquery post
+     });
+
+     $("img.rate_item").mouseout(function(e)
+     {
+        /*need to go back to the proper amount of stars*/
+      $("img.rate_item:lt("+current_rating+")").attr("src", "/static/imgs/scissors-gold.png");
+      $("img.rate_item:eq("+current_rating+")").attr("src", "/static/imgs/scissors-grey.png");
+      $("img.rate_item:gt("+current_rating+")").attr("src", "/static/imgs/scissors-grey.png");
+     });
+
+     $("img.rate_item").mouseover(function(e)
+     {
+        /* get the index of the list item image that was
+           clicked. this will allow us to fill in the proper
+           amount of scissors
+        */
+        var index = $('img.rate_item').index(e.currentTarget);
+        $("img.rate_item:lt("+index+")").attr("src", "/static/imgs/scissors-gold.png");
+         $("img.rate_item:eq("+index+")").attr("src", "/static/imgs/scissors-gold.png");
+
+       $("img.rate_item:gt("+index+")").attr("src", "/static/imgs/scissors-grey.png");
+
+
+     });
+  });
+</script>
+
+{% endblock %}
+
+{% block main %}
+
+ <div class='haircut_container'>
+     <img id='haircut_cover'  src='{{haircut_thumbs[0]}}' alt='haircut_cover' />
+ </div>
+<div class='haircut_thumbnail_container'>
+   <ul>
+       {% for pic in haircut_thumbs %}
+        <li class='haircut'>
+          <a href="#" switch-image="{{pic}}"><img class='haircut_thumb' src='{{pic}}' alt='haircut_thumbnail' /></a>
+        </li>
+       {% endfor %}
+      </ul>
+  </div>
+   <div>
+
+      <div class = 'haircut_description'>
+         <div class = 'haircut_rating'>
+             <ul id="rating_list">
+               <li class="rate_item">
+               <img class = "rate_item"src="/static/imgs/scissors-grey.png"></li>
+               <li class="rate_item"><img class = "rate_item"src="/static/imgs/scissors-grey.png"></li>
+               <li class="rate_item"><img class = "rate_item"src="/static/imgs/scissors-grey.png"></li>
+               <li class="rate_item"><img class = "rate_item"src="/static/imgs/scissors-grey.png"></li>
+              <li class="rate_item"><img class = "rate_item"src="/static/imgs/scissors-grey.png"></li>
+            </ul>
+          </div>
+        <p style = "clear:both">Description:<br />{{haircut_description}}</p>
+      </div>
+      <div class = 'stylist_info'>
+
+          <p>
+             {{ stylist_bio }}
+          </p>
+          <div class='left_div'>
+
+              <span id='stylist_name'>
+                  {{ stylist_name }}
+              </span>
+
+              <div id='contact_info'>
+                  <br />
+                  Cleveland Hts.
+                  <br />
+                  216-555-5555
+                  <br />
+                  <a href='mailto:hhair@gmail.com'>
+                  hhare at gmail dot com
+                  </a>
+              </div>
+          </div>
+          <div class='right_div'>
+              <a href='stylistprofile?id={{stylist_id}}'>
+                  <img class='stylist_portrait' src='{{stylist_portrait}}' />
+              </a>
+          <div>
+      </div>
+  </div>
+{% endblock %}

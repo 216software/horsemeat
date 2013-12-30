@@ -1,0 +1,40 @@
+{% extends "framework_templates/base.html" %}
+{%block title %}I am the greatest stylist the world has ever seen
+{% endblock %}
+{% block main %}
+
+ <div class = 'stylist_fullinfo'>
+     <p>{{bio}}</p>
+     <div class='left_div'>
+          <p class='stylist_contact_big'>
+            {{display_name}}
+             <br />
+              Cleveland Hts.
+              <br />
+              216-555-5555
+              <br />
+              <a href='mailto:hhair@gmail.com'>
+              hhare at gmail dot com
+              </a>
+           </p>
+     </div>
+     <div class='right_div'>
+       <img class='stylist_fullportrait' src='static/imgs/stylist.jpg' />
+     </div>
+  </div>
+
+ <div class='haircut_container_wide'>
+    <ul>
+
+     {% for haircut in thumbnails %}
+
+       <li class='haircut'>
+        <a href="/haircut?id={{haircut[1]}}">
+          <img class='haircut_thumb' src ='{{haircut[0]}}'/>
+        </a>
+       </li>
+
+     {% endfor %}
+    </ul>
+ </div>
+{% endblock %}

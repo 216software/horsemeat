@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+{#
+<link href='/static/css/bootstrap.css' rel='stylesheet' type='text/css'>
+#}
+
+<link href='/static/bootstrap-3.0.0/dist/css/bootstrap.css' rel='stylesheet' type='text/css'>
+<link href='/static/font-awesome/css/font-awesome.css' rel='stylesheet' type='text/css'>
+<link href='/static/custom.css' rel='stylesheet' type='text/css'>
+<link href='/static/slider/css/slider.css' rel='stylesheet' type='text/css'>
+<link href='/static/datepicker/css/datepicker.css' rel='stylesheet' type='text/css'>
+<link href='/static/css/bootstrap-select.min.css' rel='stylesheet' type='text/css'>
+
+<!--
+TODO: figure out how to host everything in the /static folder on some
+remote CDN for production hosting.
+
+Meanwhile, for development work, I want everything hosted locally, since
+a lot of times I'm on a crappy wireless network with tons of latency.
+
+-->
+
+<title>{% block title %}{% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+-->
+
+<script src="/static/jquery/jquery-1.10.2.min.js"></script>
+
+{#
+<script src="/static/js/bootstrap.min.js"></script>
+#}
+
+<script src="/static/bootstrap-3.0.0/dist/js/bootstrap.min.js"></script>
+<script src='/static/css3-mediaqueries.js'></script>
+
+<script src="/static/slider/js/bootstrap-slider.js"></script>
+<script src="/static/datepicker/js/bootstrap-datepicker.js"></script>
+<script src="/static/js/bootstrap-select.min.js"></script>
+<script src="/static/modernizr-latest.js"></script>
+<script src="/static/typeahead.js/typeahead.js"></script>
+<script src="/static/js/bootstrap-paginator.js"></script>
+<script src="/static/html5shim.js"></script>
+<script src="/static/respond.min.js"></script>
+
+
+{% block styles %}
+{% endblock styles %}
+
+</head>
+
+<body>
+
+{% include 'framework/_navbar.html' %}
+
+<div id="main">
+<div class="container">
+
+<p>
+{% if req.news_message_cookie %}
+<div id="news_message" class="alert alert-info alert-dismissable top-buffer">
+
+<button type="button" class="close" data-dismiss="alert"
+    aria-hidden="true">&times;</button>
+
+{{ req.pop_news_message_cookie() }}
+{% else %}
+<div id="news_message" class="alert alert-info hide top-buffer">
+{% endif %}
+</div>
+
+{% block main %}
+{% endblock %}
+
+</div><!-- closes div class="container" -->
+</div><!-- closes div class="main" -->
+
+{% block scripts %}
+{% endblock %}
+
+{% if cw.production_mode %}
+
+<script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"></script>
+<style type="text/css" media="screen, projection">
+  @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+</style>
+<script type="text/javascript">
+  if (typeof(Zenbox) !== "undefined") {
+    Zenbox.init({
+      dropboxID:   "20268743",
+      url:         "https://regulatorybinder.zendesk.com",
+      tabTooltip:  "Support",
+      tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_support_right.png",
+      tabColor:    "black",
+      tabPosition: "Right"
+    });
+  }
+</script>
+<!-- end zend helpdesk tab -->
+{% endif %}
+
+</body>
+
+</html>
+
+{# vim: set syntax=htmldjango: #}

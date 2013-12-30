@@ -1,0 +1,131 @@
+{% macro draw_left_nav(parentchildren, structure, key_function, binder_id, selected_folder_id) %}
+
+<style type="text/css">
+#leftnav
+{
+    background-color:white;
+    border:1px solid rgb(221, 221, 221);
+    border-radius: 4px;
+    padding-top:15px;
+}
+
+#leftnav ul.rbnav
+{
+    padding:0;
+    margin-bottom:10px;
+}
+
+#leftnav ul.rbnav li
+{
+    list-style:none;
+    /*list-style-type:circle;
+    list-style-position:inside;*/
+    margin:0px;
+    padding-left:10px;
+}
+
+#leftnav ul.rbnav span.glyphicon
+{
+    color: #428bca;
+}
+
+#leftnav a
+{
+    display:block;
+}
+
+#leftnav a:hover
+{
+    text-decoration:none;
+    background-color:#eeeeee;
+}
+
+#leftnav li.active
+{
+    color:white;
+    background-color: #428bca;
+    font-weight: normal;
+}
+
+#leftnav li.active a
+{
+    color:white;
+    font-weight: bold;
+}
+
+#leftnav li.active a:hover
+{
+    text-decoration:none;
+    background-color:#428bca;
+}
+
+#leftnav a.real-link:hover
+{
+    text-decoration:underline;
+}
+</style>
+
+<div id="leftnav" class="span3 col-md-3">
+
+<ul class="rbnav">
+
+{% for x in sorted(parentchildren, key=key_function) recursive %}
+{% set child = structure[x] %}
+
+{% if child.children and child.folder_format %}
+
+{% if selected_folder_id in child.descendents %}
+<li>
+<span class="hide pull-right glyphicon glyphicon-chevron-right"></span>
+<span class="pull-right glyphicon glyphicon-chevron-down"></span>
+<a class="toggle-children" href="#toggle-children"
+    style="font-size:larger;font-weight:bold;background-color:lightyellow;"
+>{{child.folder_format.Title}}</a>
+{% else %}
+<li>
+<span class="pull-right glyphicon glyphicon-chevron-right"></span>
+<span class="hide pull-right glyphicon glyphicon-chevron-down"></span>
+<a class="toggle-children" href="#toggle-children">{{child.folder_format.Title}}</a>
+{% endif %}
+{% if selected_folder_id in child.descendents %}
+<ul class="rbnav">
+{% else %}
+<ul class="hide rbnav">
+{% endif %}
+{{loop(child.children)}}
+</ul>
+</li>
+{% else %}
+{% if selected_folder_id == child.folder_id %}
+<li class="active">
+{% else %}
+<li>
+{% endif %}
+<a class="real-link" href="/binder/{{ binder_id }}/folder/{{child.folder_id}}/effective">
+{% if child.folder_format %}
+{{child.folder_format.Title}}
+{% else %}
+{{ child }}
+{% endif %}
+</a>
+</li>
+{% endif %}
+{% endfor %}
+</ul>
+
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+    $('a.toggle-children').on('click', function (e) {
+        $(this).siblings('ul, span.glyphicon').toggleClass('hide');
+        e.preventDefault();
+    });
+
+});
+
+</script>
+{% endmacro %}
+
+{# vim: set syntax=htmldjango: #}

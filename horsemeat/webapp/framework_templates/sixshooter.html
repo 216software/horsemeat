@@ -1,0 +1,16 @@
+{% extends "framework_templates/base.html" %}
+{% block title %} Haircuts! (is what we got) {%endblock %}
+{% block main %}
+    <p>Check out these gnarly haircuts!</p>
+    <div class='haircut_container_wide'>
+      <ul>
+        {% for haircut in haircuts %}
+           <li class='haircut'>
+            <a href="/haircut?id={{haircut[1]}}">
+              <img class='haircut_thumb' src ='{{haircut[0]}}'/>
+            </a>
+           </li>
+        {% endfor %}
+      </ul>
+    </div>
+{% endblock %}

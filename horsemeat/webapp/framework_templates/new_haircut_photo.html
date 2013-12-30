@@ -1,0 +1,160 @@
+{% extends "framework_templates/base.html" %}
+{% block title %} New Haircut! {%endblock %}
+
+{% block scripts %}
+
+<style>
+#progressbar
+{
+background-color: #bbbbbb;
+display:none;
+width:30%;
+}
+</style>
+<script type="text/javascript" src="http://jqueryrotate.googlecode.com/svn/trunk/jQueryRotate.js"></script>
+<script>
+$(function()
+{
+  $("#progressbar").progressbar({value:false});
+  $('#upload_photo_btn').button({disabled:true});
+});
+
+
+
+       function rotateImage(degrees)
+       {
+          var new_rotation = parseInt($("#rotation_angle")[0].value) + degrees;
+          if (new_rotation == 360)
+          {
+              new_rotation = 0;
+          }
+          $("#image_to_upload").rotate(new_rotation);
+          $("#rotation_angle")[0].value = new_rotation;
+       }
+
+       function fileSelected()
+       {
+         //var file = document.getElementById('datafile').files[0];
+        var file = $('#datafile').prop("files")[0];
+        if (file)
+         {
+           //if we want to preview the image, load it using file
+           //reader, and then show it when it has finished loading
+           var reader = new FileReader();
+
+           reader.onload = function (e) {
+               $('#image_to_upload').prop("src", e.target.result);
+               var preview_image = $('#preview_image').css("display","block");
+
+           //enable the upload button!!!
+           $('#upload_photo_btn').button("option", "disabled", false);
+           };
+           reader.readAsDataURL(file);
+         }
+        }
+
+        function uploadComplete(evt)
+        {
+          //disable upload button and show it
+          $('#upload_photo_btn').css('display', 'inline');
+          $("#upload_photo_btn").button("option", "disabled", true);
+          //get rid of progress bar
+          $("#progressbar").css("display", "none");
+
+          //take away preview image
+          $("#image_to_upload").prop("src", "#");
+          $("#preview_image").css("display", "none");
+          //var image_to_change = document.getElementById('image_to_upload');
+          //image_to_change.src = "";
+          //var preview_image = document.getElementById('preview_image').style.display = 'none' ;
+          $("#rotation_angle").val(0);
+          $("#datafile").val("");
+          //turn off the upload button
+
+          $('#view_haircut_btn').css('display', 'inline');
+        }
+
+        function uploadFile()
+        {
+           //use ajax instead!
+
+           //hide the upload photo button and view haircut btn
+           $('#upload_photo_btn').css('display', 'none');
+           $('#view_haircut_btn').css('display', 'none');
+
+           var form_data = new FormData($('#photo_upload_form'));
+           //xml_req.upload.addEventListener("progress", uploadProgress, false);
+           var file = $('#datafile').prop("files")[0];
+           form_data.append(file.name, file);
+           form_data.append("haircut_id", $("#haircut_id").val());
+           form_data.append("rotation_angle", $("#rotation_angle").val());
+
+           //show the progress bar
+           $("#progressbar").css("display", "block");
+           //var file = document.getElementById('datafile').files[0];
+           $.ajax({
+              url:"/uploadphoto",
+              type:"POST",
+              data:form_data,
+              complete:uploadComplete,
+              contentType:false,
+              processData:false
+            });
+        }
+
+        function uploadProgress(evt)
+        {
+           if(evt.lengthComputable)
+           {
+              var percentComplete = Math.round(evt.loaded * 100 / evt.total)
+              document.getElementById('progress').innerHTML = percentComplete.toString()
+           }
+        }
+
+
+        function uploadFailed(evt)
+        {
+          alert("failed")
+        }
+
+        function uploadCanceled(evt)
+        {
+          alert("canceled")
+        }
+
+
+
+
+
+</script>
+
+{% endblock %}
+
+
+{% block main %}
+    <p>Add another photo to the haircut or finish</p>
+    <form id='photo_upload_form' class='new_haircut' method="POST" enctype="multipart/form-data" action="/uploadphoto">
+      <label for="datafile">Image: </label>
+      <input name="haircut_id" id="haircut_id" type="hidden" value="{{haircut_id}}">
+      <input name="rotation_angle" id="rotation_angle" type="hidden" value="0" >
+      <input name="datafile" id="datafile" type="file" onchange="fileSelected();">
+      <br />
+      <input type="button" id="upload_photo_btn"  onclick="uploadFile()" value="Upload!">
+
+   <div id="progressbar"></div>
+   <a href="/haircut?id={{haircut_id}}" id="view_haircut_btn" style="display:none; margin-left:25px">View Haircut</a>
+  </form>
+
+
+  <div id="preview_image" style="display:none">
+   <img id="image_to_upload" type="hidden" name="image_to_upload" />
+
+  </div>
+  <div id="image_controllers">
+    <a href="#" onclick="rotateImage(90)"><img style="width:20px;" src="/static/imgs/rotate_right_icon.jpg"></a>
+    <a href="#" onclick="rotateImage(-90)"><img style="width:20px;" src="/static/imgs/rotate_left_icon.jpg"></a>
+
+
+  </div>
+
+{% endblock %}
