@@ -18,6 +18,8 @@ setup(
         'PyYAML',
         'jinja2',
         'psycopg2',
+        'pyrax',
         'Werkzeug',
     ],
+
 )

@@ -2,8 +2,8 @@
 
 import logging
 
-from horsemeat.webapp.framework.handler import Handler
-from horsemeat.webapp.framework.response import Response
+from horsemeat.webapp.handler import Handler
+from horsemeat.webapp.response import Response
 
 log = logging.getLogger(__name__)
 

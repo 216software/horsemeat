@@ -10,7 +10,6 @@ import uuid
 import warnings
 
 import clepy
-import cloudfiles
 import jinja2
 import pkg_resources
 import psycopg2, psycopg2.extras
@@ -384,17 +383,11 @@ class ConfigWrapper(object):
         j = jinja2.Environment(
             autoescape=True,
 
-            # Tell jinja2 to blow up when we reference an undefined var
-            # in a template.  Otherwise, it will get printed as an empty
-            # string.
+            # Tell jinja2 to blow up when we use an undefined name
+            # in a template.
             undefined=jinja2.StrictUndefined,
 
             loader=jinja2.PrefixLoader({
-
-                'framework_templates':jinja2.PackageLoader(
-                    'horsemeat.webapp.framework',
-                    'framework_templates'),
-
             }),
 
             extensions=['jinja2.ext.loopcontrols'],

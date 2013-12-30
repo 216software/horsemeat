@@ -1,6 +1,7 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf-8:
 # -*- coding: utf-8 -*-
 
+import abc
 import datetime
 import importlib
 import inspect
@@ -14,9 +15,9 @@ import jinja2
 import werkzeug.debug
 
 from horsemeat import configwrapper
-from horsemeat.webapp.framework.handler import Handler
-from horsemeat.webapp.framework.request import Request
-from horsemeat.webapp.framework.response import Response
+from horsemeat.webapp.handler import Handler
+from horsemeat.webapp.request import Request
+from horsemeat.webapp.response import Response
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +29,8 @@ class Dispatcher(object):
     """
     This is the webapp that gunicorn talks to.
     """
+
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, jinja2_environment, dbconn, config_wrapper):
 
@@ -266,6 +269,7 @@ class Dispatcher(object):
 
         return obj
 
+
     def make_handlers_from_module_string(self, s):
 
         m = importlib.import_module(s)
@@ -280,49 +284,7 @@ class Dispatcher(object):
             and inspect.isclass(cls)
             and issubclass(cls, Handler)]
 
+    @abc.abstractmethod
     def make_handlers(self):
 
-        # TODO: Move this out of the framework, since it is going
-        # to be totally different for each project, and framework code
-        # should be stuff that works the same in every project.
-
-        # Maybe each project should subclass the dispatcher and define the
-        # make_handlers method.
-
-        # Or I could list all these strings in the yaml file.
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.helloworld.hwhandlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.auth.authhandlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.horsemeat.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.binders.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.bundles.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.folders.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.mockups.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.clients.handlers'))
-
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.dashboard.handlers'))
-
-        # Put this guy almost at the end.  Why???
-        self.handlers.extend(self.make_handlers_from_module_string(
-            'horsemeat.webapp.esignatures.handlers'))
-
-        # Put this guy at the end!
-        self.handlers.append(self.make_handler(
-            'horsemeat.webapp.framework.frameworkhandlers.NotFound'))
-
+        raise NotImplementedError

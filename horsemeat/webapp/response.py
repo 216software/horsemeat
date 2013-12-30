@@ -85,10 +85,10 @@ class Response(object):
         Just use the relative_redirect method if you want to do
         something like::
 
-        >>> cw = configwrapper.ConfigWrapper.from_yaml_file_name('test.yaml')
-        >>> cw = cw.set_as_default()
+        >>> cw = configwrapper.ConfigWrapper.from_yaml_file_name('test.yaml') # doctest: +SKIP
+        >>> cw = cw.set_as_default() # doctest: +SKIP
 
-        >>> resp = Response.relative_redirect('/login')
+        >>> resp = Response.relative_redirect('/login') # doctest: +SKIP
 
         """
 
