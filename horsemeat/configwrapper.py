@@ -329,7 +329,7 @@ class ConfigWrapper(object):
 
     def set_as_default(self):
 
-        self.__class__.default_instance = self
+        ConfigWrapper.default_instance = self
         return self
 
     @classmethod
@@ -465,7 +465,7 @@ class ConfigWrapper(object):
     def launch_debugger_on_error(self):
 
         """
-        This defaults to False if the config file has no entry.
+        This returns False if the config file has no entry.
         """
 
         if 'launch_debugger_on_error' \
