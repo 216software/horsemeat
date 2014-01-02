@@ -4,3 +4,4 @@
 .~lock*
 .coverage
 horsemeat.egg-info
+dist
