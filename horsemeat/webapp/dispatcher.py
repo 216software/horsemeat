@@ -190,7 +190,6 @@ class Dispatcher(object):
             cw.set_as_default()
 
             cw.configure_logging()
-
             cw.verify_config_file()
             cw.connect_everything()
 
@@ -223,7 +222,6 @@ class Dispatcher(object):
         except Exception, ex:
             log.critical(ex, exc_info=1)
             raise
-
 
     def make_handler(self, s):
 
@@ -280,9 +278,16 @@ class Dispatcher(object):
                 self.config_wrapper,
                 self)
             for name, cls in inspect.getmembers(m)
+
             if cls != Handler # don't instantiate the base class!
+
             and inspect.isclass(cls)
-            and issubclass(cls, Handler)]
+            and issubclass(cls, Handler)
+
+            # This is nasty -- I'm testing if this cls has a route
+            # method that has been defined.
+            and getattr(cls.route, '__isabstractmethod__', False) is False
+            ]
 
     @abc.abstractmethod
     def make_handlers(self):

@@ -1,6 +1,8 @@
 # vim: set expandtab ts=4 sw=4 filetype=python:
 
+import abc
 import contextlib
+import importlib
 import logging
 import logging.config
 import smtplib
@@ -26,6 +28,17 @@ class ConfigWrapper(object):
     way the data is stored in the config files, and so that we can
     reorganize stuff.
     """
+
+    __metaclass__ = abc.ABCMeta
+
+    # Subclasses must define this configmodule attribute.  There's
+    # nothing in the abc module that I can use to force that to happen,
+    # but it sure would be nice.  In the subclass, set it to a string
+    # like:
+    #
+    #   "trailhead.configs.yaml_files"
+    #
+    configmodule = None
 
     # Later, you can set up a particular instance as the default instance.
     default_instance = None
@@ -72,13 +85,16 @@ class ConfigWrapper(object):
         if not filename:
             raise ValueError("Sorry, I need a filename!")
 
+        elif not cls.configmodule:
+            raise ValueError("Sorry, you need to set cls.configmodule!")
+
         if filename in cls.instances and not force_reload:
             return cls.instances[filename]
 
         else:
 
             stream = pkg_resources.resource_stream(
-                'horsemeat.configs.yaml_files',
+                cls.configmodule,
                 filename)
 
             self = cls(yaml.load(stream))
@@ -98,7 +114,6 @@ class ConfigWrapper(object):
 
     # Short aliases are fun too.
     get_pgconn = get_postgresql_connection
-
 
     def get_cloudfile_connection(self):
 
@@ -125,7 +140,6 @@ class ConfigWrapper(object):
         log.info("Just made cloudfile connection {0}.".format(cloudconn))
 
         return cloudconn
-
 
     @contextlib.contextmanager
     def get_autocommitting_postgresql_connection(self):
@@ -636,6 +650,28 @@ class ConfigWrapper(object):
     def production_mode(self):
         return not self.dev_mode
 
+    def build_webapp(self):
+
+        self.set_as_default()
+        self.configure_logging()
+        self.verify_config_file()
+        self.connect_everything()
+
+        if self.production_mode:
+            self.run_production_mode_stuff()
+
+        j = self.get_jinja2_environment()
+        pgconn = self.get_postgresql_connection()
+
+        return self.dispatcher_class(j, pgconn, self)
+
+    def run_production_mode_stuff(self):
+        log.info("Nothing to do for production-mode stuff")
+
+    @abc.abstractproperty
+    def dispatcher_class(self):
+
+        raise NotImplementedError
 
 class MissingConfig(KeyError):
 
