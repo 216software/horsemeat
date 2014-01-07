@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-from .horsemeat import __version__
+from horsemeat import __version__
 
 setup(
 
