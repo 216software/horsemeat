@@ -213,94 +213,33 @@ class ConfigWrapper(object):
         psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
         if register_composite_types:
+            self.register_horsemeat_composite_types(pgconn)
+            log.debug('Registered horsemeat composite types')
             self.register_composite_types(pgconn)
+            log.debug('Registered projects composite types')
 
         return pgconn
 
     # Make an alias because Matt can't remember stuff good.
     create_postgresql_connection = make_database_connection
 
+    @abc.abstractproperty
     def register_composite_types(self, pgconn):
 
-        from horsemeat.model.folder import \
-        UploadedFileCompositeFactory, UploadedSignatureCompositeFactory, \
-        SignaturesWithSignatoriesCompositeFactory, \
-        BundleSignaturesWithSignatoryNamesFactory, \
-        TemplateFileCompositeFactory, \
-        DefaultFileCompositeFactory, \
-        EsignatureCompositeFactory, \
-        FolderFactory
+        raise NotImplementedError
 
-        psycopg2.extras.register_composite('template_files', pgconn,
-            factory=TemplateFileCompositeFactory)
 
-        psycopg2.extras.register_composite('uploaded_files', pgconn,
-            factory=UploadedFileCompositeFactory)
-
-        psycopg2.extras.register_composite('signatures_with_signatories',
-            pgconn, factory=SignaturesWithSignatoriesCompositeFactory)
-
-        psycopg2.extras.register_composite('default_files', pgconn,
-            factory=DefaultFileCompositeFactory)
-
-        psycopg2.extras.register_composite('esignatures', pgconn,
-            factory=EsignatureCompositeFactory)
-
-        psycopg2.extras.register_composite(
-            'folders',
-            pgconn,
-            factory=FolderFactory)
-
-        from horsemeat.model.rackspacefile import \
-        RackspaceFileCompositeFactory
-
-        psycopg2.extras.register_composite('rackspace_files', pgconn,
-            factory=RackspaceFileCompositeFactory)
+    def register_horsemeat_composite_types(self, pgconn):
 
         from horsemeat.model.user import PersonFactory
 
         psycopg2.extras.register_composite('people', pgconn,
             factory=PersonFactory)
 
-        from horsemeat.model.bundle import \
-        BundleFactory, \
-        BundleEsignatureFactory
-
-        psycopg2.extras.register_composite('bundles', pgconn,
-            factory=BundleFactory)
-
-        psycopg2.extras.register_composite('bundle_esignatures', pgconn,
-            factory=BundleEsignatureFactory)
-
-        psycopg2.extras.register_composite(
-            'bundle_signatures_with_signatory_names',
-            pgconn,
-            factory=BundleSignaturesWithSignatoryNamesFactory)
-
-        from horsemeat.model.binders import \
-        BinderFactory, BinderTemplateFactory
-
-        psycopg2.extras.register_composite('binders', pgconn,
-          factory=BinderFactory)
-
-        psycopg2.extras.register_composite('binder_templates', pgconn,
-          factory=BinderTemplateFactory)
-
-        from horsemeat.queries.clients import ClientCompositeFactory
-
-        psycopg2.extras.register_composite('clients', pgconn,
-          factory=ClientCompositeFactory)
-
         from horsemeat.model.session import SessionFactory
 
         psycopg2.extras.register_composite('horsemeat_sessions', pgconn,
           factory=SessionFactory)
-
-        from horsemeat.model.visibility import VisibilitySettingsFactory
-
-        psycopg2.extras.register_composite('visibility_settings', pgconn,
-          factory=VisibilitySettingsFactory)
-
 
         log.info('Just registered composite types in psycopg2')
 
