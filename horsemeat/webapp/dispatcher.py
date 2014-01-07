@@ -16,7 +16,6 @@ import werkzeug.debug
 
 from horsemeat import configwrapper
 from horsemeat.webapp.handler import Handler
-from horsemeat.webapp.request import Request
 from horsemeat.webapp.response import Response
 
 log = logging.getLogger(__name__)
@@ -31,6 +30,12 @@ class Dispatcher(object):
     """
 
     __metaclass__ = abc.ABCMeta
+
+    @abc.abstractproperty
+    def request_class(self):
+
+        raise NotImplementedError
+
 
     def __init__(self, jinja2_environment, dbconn, config_wrapper):
 
@@ -64,7 +69,7 @@ class Dispatcher(object):
 
         try:
 
-            req = Request(self.dbconn, self.config_wrapper, environ)
+            req = self.request_class(self.dbconn, self.config_wrapper, environ)
 
             # TODO: Figure out if there is some more elegant approach to
             # making the request object visible in the template.

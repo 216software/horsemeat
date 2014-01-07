@@ -415,8 +415,16 @@ class Response(object):
     def tmpl(cls, template_name, **data):
 
         cw = configwrapper.ConfigWrapper.get_default()
+
+        log.debug('Working with cw {0}.'.format(cw))
+
         j = cw.get_jinja2_environment()
+
+        log.debug('j.globals.keys(): {0}.'.format(j.globals.keys()))
+
         template = j.get_template(template_name)
+
+        log.debug('template.globals: {0}'.format(template.globals))
 
         log.debug('Rendering template {0}...'.format(template_name))
 

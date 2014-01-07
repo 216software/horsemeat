@@ -1,10 +1,12 @@
 from setuptools import find_packages, setup
 
+from .horsemeat import __version__
+
 setup(
 
     name='horsemeat',
 
-    version='0.1.0',
+    version=__version__,
 
     packages=find_packages(),
 
@@ -16,10 +18,9 @@ setup(
         'clepy',
         'decorator',
         'PyYAML',
-        'jinja2',
+        'jinja2==2.6',
         'psycopg2',
         'pyrax',
         'Werkzeug',
     ],
-
 )
