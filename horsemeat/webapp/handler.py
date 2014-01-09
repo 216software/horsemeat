@@ -20,9 +20,7 @@ class Handler(object):
 
     __metaclass__ = abc.ABCMeta
 
-    add_these_to_jinja2_globals = dict({
-        'clepy': clepy,
-    })
+    add_these_to_jinja2_globals = dict()
 
     route_patterns = []
 
@@ -45,40 +43,10 @@ class Handler(object):
 
     def add_stuff_to_jinja2_globals(self):
 
-        """
-        There are a bunch of things that I like using inside my
-        templates, so I add them to the jinja globals.
-
-        Right now, since all the handlers share a reference to the same
-        jinja2 environment instance, it is not required that subclasses
-        run the code in here.
-
-        """
-
-        import datetime
-        import json
-        import math
-
-        import clepy
-
-        self.j.globals['clepy'] = clepy
-        self.j.globals['config_wrapper'] = self.config_wrapper
-        self.j.globals['chunkify'] = clepy.chunkify
-        self.j.globals['datetime'] = datetime
-        self.j.globals['enumerate'] = enumerate
-        self.j.globals['float'] = float
-        self.j.globals['id'] = id
-        self.j.globals['json'] = json
-        self.j.globals['len'] = len
-        self.j.globals['round'] = round
-        self.j.globals['str'] = str
-        self.j.globals['max'] = max
-        self.j.globals['ceil'] = math.ceil
-        self.j.globals['int'] = int
-        self.j.globals['type'] = type
-
         if self.add_these_to_jinja2_globals:
+
             for k, v in self.add_these_to_jinja2_globals.items():
+                log.debug('Adding {0} to jinja2 globals...'.format(k))
                 self.j.globals[k] = v
 
         # In general, when I modify self, I return it.
