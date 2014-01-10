@@ -27,10 +27,11 @@ log = logging.getLogger(__name__)
 class ComplexEncoder(json.JSONEncoder):
 
     def default(self, obj):
+
         try:
             return super(ComplexEncoder, obj).default(obj)
 
-        except TypeError:
+        except TypeError as ex:
             return str(obj)
 
 class ConfigWrapper(object):
@@ -389,7 +390,12 @@ class ConfigWrapper(object):
         # Give jinja a reference to the configwrapper.
         j.globals['cw'] = self
 
+        self.add_more_stuff_to_jinja2_globals()
+
         return j
+
+    def add_more_stuff_to_jinja2_globals(self):
+        log.info("Nothing extra to add...")
 
     def get_jinja2_environment(self):
 
