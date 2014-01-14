@@ -28,11 +28,24 @@ class ComplexEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
+        log.debug('encoding {0}, a {1}.'.format(obj, type(obj)))
+
+        if hasattr(obj, '__jsondata__'):
+            log.debug('extracting jsondata...')
+            return self.default(obj.__jsondata__)
+
         try:
-            return super(ComplexEncoder, obj).default(obj)
+            return json.JSONEncoder.default(self, obj)
 
         except TypeError as ex:
-            return str(obj)
+
+            log.exception(ex)
+
+            if isinstance(obj, datetime.datetime):
+                return str(obj)
+
+            else:
+                raise
 
 class ConfigWrapper(object):
 

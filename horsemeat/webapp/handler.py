@@ -142,6 +142,10 @@ class Handler(object):
 
         return f
 
+    @abc.abstractproperty
+    def four_zero_four_template(self):
+        raise NotImplementedError
+
     def not_found(self, req):
 
         """
@@ -155,8 +159,9 @@ class Handler(object):
         #Determine what we return based on request type
         if req.is_AJAX:
             resp = Response.plain("404 NOT FOUND")
+
         else:
-            resp = Response.tmpl('framework/404.html')
+            resp = Response.tmpl(self.four_zero_four_template)
 
         resp.status = '404 NOT FOUND'
 
