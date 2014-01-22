@@ -28,24 +28,18 @@ class ComplexEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
-        log.debug('encoding {0}, a {1}.'.format(obj, type(obj)))
-
+        # Any object that wants to be encoded into JSON should make a
+        # property called __json__data that spits out some dictionary.
         if hasattr(obj, '__jsondata__'):
-            log.debug('extracting jsondata...')
-            return self.default(obj.__jsondata__)
+            return obj.__jsondata__
 
-        try:
+        # this is how we handle datetimes and dates.
+        elif hasattr(obj, 'isoformat') and callable(obj.isoformat):
+            return obj.isoformat()
+
+        else:
             return json.JSONEncoder.default(self, obj)
 
-        except TypeError as ex:
-
-            log.exception(ex)
-
-            if isinstance(obj, datetime.datetime):
-                return str(obj)
-
-            else:
-                raise
 
 class ConfigWrapper(object):
 
