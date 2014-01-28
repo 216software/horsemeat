@@ -356,7 +356,7 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
-            json.dumps(data))
+            json.dumps(data, cls=configwrapper.ComplexEncoder))
 
         return json_response
 
