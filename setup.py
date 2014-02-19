@@ -1,10 +1,12 @@
 from setuptools import find_packages, setup
 
+from horsemeat import __version__
+
 setup(
 
     name='horsemeat',
 
-    version='0.1.1',
+    version='0.2.2',
 
     packages=find_packages(),
 
@@ -15,10 +17,9 @@ setup(
     install_requires=[
         'decorator',
         'PyYAML',
-        'jinja2',
+        'jinja2==2.6',
         'psycopg2',
         'pyrax',
         'Werkzeug',
     ],
-
 )

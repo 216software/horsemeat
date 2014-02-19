@@ -5,3 +5,4 @@
 .coverage
 horsemeat.egg-info
 dist
+wheelhouse

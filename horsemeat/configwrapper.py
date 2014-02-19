@@ -2,9 +2,13 @@
 
 import abc
 import contextlib
+import datetime
+import functools
 import importlib
+import json
 import logging
 import logging.config
+import math
 import smtplib
 import sys
 import traceback
@@ -19,6 +23,23 @@ import pyrax
 import yaml
 
 log = logging.getLogger(__name__)
+
+class ComplexEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+
+        # Any object that wants to be encoded into JSON should make a
+        # property called __json__data that spits out some dictionary.
+        if hasattr(obj, '__jsondata__'):
+            return obj.__jsondata__
+
+        # this is how we handle datetimes and dates.
+        elif hasattr(obj, 'isoformat') and callable(obj.isoformat):
+            return obj.isoformat()
+
+        else:
+            return json.JSONEncoder.default(self, obj)
+
 
 class ConfigWrapper(object):
 
@@ -351,19 +372,37 @@ class ConfigWrapper(object):
         self.__class__.jinja2_environment = j
 
         # Add a bunch of stuff to the template namespace.
+        j.globals['ceil'] = math.ceil
+        j.globals['clepy'] = clepy
+        j.globals['datetime'] = datetime
+        j.globals['dir'] = dir
+        j.globals['enumerate'] = enumerate
+        j.globals['float'] = float
         j.globals['getattr'] = getattr
         j.globals['hasattr'] = hasattr
-        j.globals['clepy'] = clepy
-        j.globals['dir'] = dir
-        j.globals['zip'] = zip
-        j.globals['uuid'] = uuid
+        j.globals['id'] = id
+        j.globals['int'] = int
+        j.globals['json'] = json
+        j.globals['fancyjsondumps'] = functools.partial(json.dumps, cls=ComplexEncoder)
+        j.globals['len'] = len
         j.globals['mathset'] = set
+        j.globals['max'] = max
+        j.globals['round'] = round
         j.globals['sorted'] = sorted
+        j.globals['str'] = str
+        j.globals['type'] = type
+        j.globals['uuid'] = uuid
+        j.globals['zip'] = zip
 
         # Give jinja a reference to the configwrapper.
         j.globals['cw'] = self
 
+        self.add_more_stuff_to_jinja2_globals()
+
         return j
+
+    def add_more_stuff_to_jinja2_globals(self):
+        log.info("Nothing extra to add...")
 
     def get_jinja2_environment(self):
 

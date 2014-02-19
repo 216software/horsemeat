@@ -356,7 +356,7 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
-            json.dumps(data))
+            json.dumps(data, cls=configwrapper.ComplexEncoder))
 
         return json_response
 
@@ -415,7 +415,9 @@ class Response(object):
     def tmpl(cls, template_name, **data):
 
         cw = configwrapper.ConfigWrapper.get_default()
+
         j = cw.get_jinja2_environment()
+
         template = j.get_template(template_name)
 
         log.debug('Rendering template {0}...'.format(template_name))

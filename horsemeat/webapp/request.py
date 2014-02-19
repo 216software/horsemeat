@@ -5,6 +5,7 @@ import collections
 import Cookie
 import hmac
 import inspect
+import json
 import logging
 import re
 import textwrap
@@ -129,7 +130,8 @@ class Request(collections.MutableMapping):
         If the content length is small enough, just read everything into
         memory.
 
-        Otherwise, create a temporary file and put the stuff in there.
+        Otherwise, raise an exception.  One day, I'll figure out how to
+        write stuff out to tempfiles.
         """
 
         if self.parsed_content_length > self.maximum_buffer_size:
@@ -566,6 +568,27 @@ class Request(collections.MutableMapping):
 
         else:
             raise ValueError('Sorry, could not figure out binder ID')
+
+    @property
+    def json(self):
+
+        if 'json' in self:
+            return self['json']
+
+        elif self.body:
+
+            try:
+                self['json'] = json.loads(self.body)
+                return self.json
+
+            except Exception as ex:
+                log.exception(ex)
+                self['json'] = None
+                return self.json
+
+        else:
+            self['json'] = None
+            return self.json
 
 
 class BiggerThanMemoryBuffer(ValueError):
