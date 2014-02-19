@@ -4,3 +4,4 @@ Werkzeug==0.8.3
 decorator==3.4.0
 psycopg2==2.5
 pyrax==1.6.1
+clepy==0.3.21

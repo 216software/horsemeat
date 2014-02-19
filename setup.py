@@ -4,7 +4,7 @@ setup(
 
     name='horsemeat',
 
-    version='0.1.0',
+    version='0.1.1',
 
     packages=find_packages(),
 
@@ -13,7 +13,6 @@ setup(
     package_dir={'horsemeat': 'horsemeat'},
 
     install_requires=[
-        'clepy',
         'decorator',
         'PyYAML',
         'jinja2',
