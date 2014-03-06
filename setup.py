@@ -6,7 +6,7 @@ setup(
 
     name='horsemeat',
 
-    version='0.2.3',
+    version=__version__,
 
     packages=find_packages(),
 
