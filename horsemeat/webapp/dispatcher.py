@@ -31,10 +31,13 @@ class Dispatcher(object):
 
     __metaclass__ = abc.ABCMeta
 
+    # TODO: maybe replace this with an abstract method like "make
+    # request instance".
     @abc.abstractproperty
     def request_class(self):
 
         raise NotImplementedError
+
 
 
     def __init__(self, jinja2_environment, dbconn, config_wrapper):
@@ -85,6 +88,14 @@ class Dispatcher(object):
 
             if not isinstance(resp, Response):
                 raise Exception("Handler didn't return a response object!")
+
+            # Maybe if the route method returned self, rather than
+            # self.handle, at this point, we could do a test like
+            #
+            #     if callable(getattr(h, 'after_handle', None))
+            #
+            # and then all this stuff could be defined on the
+            # handler.Handler class rather than in here.
 
             # TODO: make this happen as an automatic side effect of
             # reading the data, so that there is absolutely no risk at

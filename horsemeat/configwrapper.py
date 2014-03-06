@@ -1,4 +1,4 @@
-# vim: set expandtab ts=4 sw=4 filetype=python:
+# vim: set expandtab ts=5 sw=4 filetype=python:
 
 import abc
 import contextlib
@@ -24,7 +24,7 @@ import yaml
 
 log = logging.getLogger(__name__)
 
-class ComplexEncoder(json.JSONEncoder):
+class HorsemeatJSONEncoder(json.JSONEncoder):
 
     def default(self, obj):
 
@@ -37,9 +37,13 @@ class ComplexEncoder(json.JSONEncoder):
         elif hasattr(obj, 'isoformat') and callable(obj.isoformat):
             return obj.isoformat()
 
+        elif isinstance(obj, uuid.UUID):
+          return str(obj)
+
         else:
             return json.JSONEncoder.default(self, obj)
 
+fancyjsondumps = functools.partial(json.dumps, cls=HorsemeatJSONEncoder)
 
 class ConfigWrapper(object):
 
@@ -383,7 +387,7 @@ class ConfigWrapper(object):
         j.globals['id'] = id
         j.globals['int'] = int
         j.globals['json'] = json
-        j.globals['fancyjsondumps'] = functools.partial(json.dumps, cls=ComplexEncoder)
+        j.globals['fancyjsondumps'] = fancyjsondumps
         j.globals['len'] = len
         j.globals['mathset'] = set
         j.globals['max'] = max
