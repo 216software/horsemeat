@@ -4,7 +4,6 @@ import abc
 import contextlib
 import datetime
 import functools
-import importlib
 import json
 import logging
 import logging.config
@@ -139,32 +138,6 @@ class ConfigWrapper(object):
 
     # Short aliases are fun too.
     get_pgconn = get_postgresql_connection
-
-    def get_cloudfile_connection(self):
-
-        1/0
-
-        "DO NOT USE THIS!  ALWAYS CREATE A NEW CONNECTION!"
-
-        if not self.cloudfile_connection:
-            cloudconn = self.make_new_cloudfile_connection()
-            self.__class__.cloudfile_connection = cloudconn
-
-        return self.cloudfile_connection
-
-    @property
-    def cloudfile_connection_data(self):
-        return dict(
-           username=self.config_dictionary['cloudfiles']['username'],
-           api_key = self.config_dictionary['cloudfiles']['api-key'])
-
-    def make_new_cloudfile_connection(self):
-
-        cloudconn = cloudfiles.Connection(**self.cloudfile_connection_data)
-
-        log.info("Just made cloudfile connection {0}.".format(cloudconn))
-
-        return cloudconn
 
     @contextlib.contextmanager
     def get_autocommitting_postgresql_connection(self):
@@ -504,63 +477,6 @@ class ConfigWrapper(object):
             self.pyrax_connection = self.do_pyrax_stuff()
 
         return self.pyrax_connection
-
-    @property
-    def protocol_folder_id(self):
-
-        try:
-            return self.config_dictionary\
-            ['special_folders']['protocol_folder_id']
-
-        except KeyError:
-            raise MissingConfig(
-                "Sorry, couldn't find a protocol folder ID key!")
-
-    @property
-    def table_of_contents_folder_id(self):
-
-        try:
-            return self.config_dictionary\
-            ['special_folders']['table_of_contents_folder_id']
-
-        except KeyError:
-            raise MissingConfig(
-                "Sorry, couldn't find a protocol folder ID key!")
-
-    @property
-    def current_irb_approved_submission_folder_id(self):
-        try:
-            return self.config_dictionary\
-            ['special_folders']['current_irb_approved_submission']
-
-        except KeyError:
-            raise MissingConfig(
-                "Sorry, couldn't find a key for the current "
-                "IRB-approved submission folder ID!")
-
-    @property
-    def annual_irb_approved_submission_folder_id(self):
-
-        try:
-            return self.config_dictionary\
-            ['special_folders']['annual_irb_approved_submission']
-
-        except KeyError:
-            raise MissingConfig(
-                "Sorry, couldn't find a key for the "
-                "Annual IRB-approved submission folder ID!")
-
-    @property
-    def oversight_folder_id(self):
-
-        try:
-            return self.config_dictionary\
-            ['special_folders']['oversight']
-
-        except KeyError:
-            raise MissingConfig(
-                "Sorry, couldn't find a key for the "
-                "oversight folder ID!")
 
 
     def verify_config_file(self):
