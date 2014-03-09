@@ -193,6 +193,3 @@ class Person(object):
 
     def __eq__(self, other):
         return self.person_id == getattr(other, 'person_id', -1)
-
-
-

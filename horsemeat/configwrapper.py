@@ -1,4 +1,4 @@
-# vim: set expandtab ts=5 sw=4 filetype=python:
+# vim: set expandtab ts=4 sw=4 filetype=python:
 
 import abc
 import contextlib
@@ -126,6 +126,12 @@ class ConfigWrapper(object):
             cls.instances[filename] = self
 
             return self
+
+    @property
+    def should_register_composite_types(self):
+
+          return self.config_dictionary['postgresql'].get(
+               'should_register_composite_types', False)
 
     def get_postgresql_connection(self, register_composite_types=True):
 

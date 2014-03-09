@@ -288,11 +288,23 @@ class Dispatcher(object):
 
         m = importlib.import_module(s)
 
+        # This is one really big gigantic list comprehension, but don't
+        # be scared!  It does three things:
+
+        # 1.  Make a list of the objects contained in the module m.
+
+        # 2.  Filter down that list to just the objects that are
+        #     subclasses of the Handler class and that defined all the
+        #     virtual methods.
+
+        # 3.  Instantiate all the classes in the filtered list.
+
         return [cls(
                 self.jinja2_environment,
                 self.dbconn,
                 self.config_wrapper,
                 self)
+
             for name, cls in inspect.getmembers(m)
 
             if cls != Handler # don't instantiate the base class!
@@ -301,7 +313,11 @@ class Dispatcher(object):
             and issubclass(cls, Handler)
 
             # This is nasty -- I'm testing if this cls has a route
-            # method that has been defined.
+            # method that has been defined.  The point of this is that
+            # each project that uses horsemeat defines its own Handler
+            # that subclasses the horsemeat handler.  But those also
+            # only have virtual (abstract) methods, so we should not
+            # instantiate them.
             and getattr(cls.route, '__isabstractmethod__', False) is False
             ]
 
