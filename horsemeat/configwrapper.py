@@ -511,11 +511,6 @@ class ConfigWrapper(object):
             'cloudfile_connection_data',
             'smtp_host',
             'web_host',
-            'table_of_contents_folder_id',
-            'protocol_folder_id',
-            'current_irb_approved_submission_folder_id',
-            'annual_irb_approved_submission_folder_id',
-            'oversight_folder_id',
         ]
 
         log.debug('Verifying config file contents:')
