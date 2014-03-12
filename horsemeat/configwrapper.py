@@ -64,7 +64,8 @@ class ConfigWrapper(object):
     #
     configmodule = None
 
-    # Later, you can set up a particular instance as the default instance.
+    # Later, you can set up a particular instance as the default
+    # instance, by using the set_as_default instance method.
     default_instance = None
 
     # Keep a reference of the instances made from each yaml file.
@@ -73,18 +74,11 @@ class ConfigWrapper(object):
     # Just an alias.
     already_instantiated = instances
 
-    # Allow all instances to share a connection to the postgresql database.
+    # Keep these things at the class level, so that all instances share
+    # them.
     postgresql_connection = None
-
-    # Allow all instances to share a jinja2 environment.
     jinja2_environment = None
-
-    # Allow all instances to share a connection to the cloud files
-    cloudfile_connection = None
-
-    # Allow instances to share an SMTP connection.
     smtp_connection = None
-
     pyrax_connection = None
 
     def __init__(self, config_dictionary):
@@ -169,14 +163,16 @@ class ConfigWrapper(object):
             self.postgresql_connection.commit()
 
     @property
-    def postgresql_connection_data(self):
+    def pyrax_username(self):
+        return self.config_dictionary['cloudfiles']['username']
 
-        return dict(
-            port=self.config_dictionary['postgresql']['port'],
-            database=self.config_dictionary['postgresql']['database'],
-            host=self.config_dictionary['postgresql']['host'],
-            user=self.config_dictionary['postgresql']['user'],
-            password=self.config_dictionary['postgresql']['password'])
+    @property
+    def pyrax_api_key(self):
+        return self.config_dictionary['cloudfiles']['api-key'],
+
+    @property
+    def pyrax_region(self):
+        return "ORD"
 
     @property
     def database_host(self):
@@ -198,13 +194,22 @@ class ConfigWrapper(object):
     def database_user(self):
         return self.config_dictionary['postgresql']['user']
 
+    @property
+    def database_password(self):
+        return self.config_dictionary['postgresql']['password']
+
     def make_database_connection(self, register_composite_types=True):
 
         pgconn = psycopg2.connect(
             connection_factory=psycopg2.extras.NamedTupleConnection,
-            **self.postgresql_connection_data)
+            port=self.database_port,
+            database=self.database_name,
+            host=self.database_host,
+            user=self.database_user,
+            password=self.database_password)
 
-        log.info("Just made postgresql connection {0}.".format(pgconn))
+        log.info("Just made postgresql connection {0}.".format(
+            pgconn))
 
         # Keep a reference to this connection on the class, so that
         # other instances can just recycle this connection.
@@ -464,6 +469,7 @@ class ConfigWrapper(object):
         pyrax.set_setting('identity_type',  'rackspace')
 
         pyrax.set_credentials(
+
             self.config_dictionary['cloudfiles']['username'],
             self.config_dictionary['cloudfiles']['api-key'],
             region="ORD")
@@ -506,9 +512,16 @@ class ConfigWrapper(object):
         # property to a class-level (not instance level!) array
         # attribute.
 
+        # In fact, that's what should be done.  So, please do it.
+
         important_properties = [
-            'postgresql_connection_data',
-            'cloudfile_connection_data',
+            'database_port',
+            'database_name',
+            'database_host',
+            'database_user',
+            'database_password',
+            'pyrax_username',
+            'pyrax_api_key',
             'smtp_host',
             'web_host',
         ]

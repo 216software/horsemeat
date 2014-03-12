@@ -356,7 +356,7 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
-            fancyjsondumps(data))
+            configwrapper.fancyjsondumps(data))
 
         return json_response
 
