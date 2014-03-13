@@ -36,8 +36,13 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         elif hasattr(obj, 'isoformat') and callable(obj.isoformat):
             return obj.isoformat()
 
+        # If you fuss about how I'm using isinstance here, then you are
+        # an idiot.
         elif isinstance(obj, uuid.UUID):
           return str(obj)
+
+        elif isinstance(obj, psycopg2.extras.DateTimeTZRange):
+            return dict(lower=obj.lower, upper=obj.upper)
 
         else:
             return json.JSONEncoder.default(self, obj)
