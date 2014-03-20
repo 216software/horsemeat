@@ -528,6 +528,9 @@ class ConfigWrapper(object):
         Make connections to all the external services we need.
         """
 
+        # TODO: figure out an elegant way for subclasses to run this as
+        # well as their own on-bootup stuff.
+
         self.get_postgresql_connection()
         self.get_pyrax_connection()
 
@@ -547,7 +550,6 @@ class ConfigWrapper(object):
         self.set_as_default()
         self.configure_logging()
         self.verify_config_file()
-        self.connect_everything()
 
         if self.production_mode:
             self.run_production_mode_stuff()
