@@ -5,13 +5,13 @@ import json
 import pprint
 import uuid
 
-import psycopg2.extras
-
-__version__ = '0.3.4'
+__version__ = '0.3.5'
 
 class HorsemeatJSONEncoder(json.JSONEncoder):
 
     def default(self, obj):
+
+        import psycopg2.extras
 
         # Any object that wants to be encoded into JSON should make a
         # property called __json__data that spits out some dictionary.
@@ -26,6 +26,7 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         # an idiot.
         elif isinstance(obj, uuid.UUID):
           return str(obj)
+
 
         elif isinstance(obj, psycopg2.extras.DateTimeTZRange):
             return dict(lower=obj.lower, upper=obj.upper)
