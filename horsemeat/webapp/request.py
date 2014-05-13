@@ -173,6 +173,8 @@ class Request(collections.MutableMapping):
     @property
     def files(self):
 
+        # TODO: reconsider this -- it just hides the obvious truth.
+
         if 'request.files' not in self:
             self['request.files'] = self.wz_req.files
 

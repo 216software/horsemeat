@@ -243,6 +243,14 @@ class Dispatcher(object):
 
     def make_handler(self, s):
 
+        """
+        Don't get this confused with the other method named
+        make_handlers!
+        """
+
+        # TODO: rename this to something that won't be confused with
+        # make_handlers.
+
         cls = self.convert_string_to_class(s)
 
         return cls(
