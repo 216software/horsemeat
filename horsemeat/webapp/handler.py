@@ -4,6 +4,7 @@ import abc
 import logging
 import sys
 import textwrap
+import warnings
 
 import clepy
 import decorator
@@ -70,11 +71,20 @@ class Handler(object):
 
     @property
     def j(self):
-        return self.jinja2_environment
+        return self.cw.get_jinja2_environment()
 
     @property
     def templates(self):
-        return self.jinja2_environment
+        return self.cw.get_jinja2_environment()
+
+    @property
+    def pgconn(self):
+        return self.cw.get_pgconn()
+
+    @pgconn.setter(self, val):
+
+        if val:
+            warnings.warn("Stop using this and instead just ask the cw for a connection")
 
     @abc.abstractmethod
     def route(self, request):
@@ -167,39 +177,6 @@ class Handler(object):
 
         return resp
 
-
-    def build_nav_dict(self, binder_id):
-
-        cursor = self.pgconn.cursor()
-
-        cursor.execute(textwrap.dedent("""
-            select bt.root_folder_id
-            from binder_templates bt
-            join binders b
-            on bt.binder_template_id = b.binder_template_id
-            where b.binder_id = %(binder_id)s
-            """), {'binder_id': binder_id})
-
-        root_folder_id = cursor.fetchone().root_folder_id
-
-        cursor.execute(textwrap.dedent("""
-            select fwc.*, f.folder_title
-            from folders_with_children fwc
-            join folders f
-            on fwc.folder_id = f.folder_id
-            order by f.folder_title
-            """))
-
-        self.nav_dict = {x.folder_id:x for x in cursor.fetchall()}
-
-        top_node = self.nav_dict[root_folder_id]
-
-        return dict(
-            key_function=lambda folder_id: self.nav_dict[folder_id].folder_title,
-            structure=self.nav_dict,
-            parentchildren=top_node.children)
-
-
     def check_route_patterns(self, req):
 
         for rp in self.route_patterns:
@@ -224,41 +201,6 @@ class Handler(object):
         return '{0}.{1}'.format(
             self.__class__.__module__,
             self.__class__.__name__)
-
-
-    def build_bread_crumb_dict(self, folder_id):
-
-        cursor = self.cw.get_pgconn().cursor()
-
-        cursor.execute(textwrap.dedent("""
-            select folder_id, folder_title, folder_format->'Title' as
-            title,
-            parent_folder_id
-
-            from folders
-
-            where folder_id = any(get_all_folder_parents(%(folder_id)s))
-            """), {'folder_id': folder_id})
-
-        return {row.folder_id:row for row in cursor}
-
-
-    def build_bread_crumb_data(self, folder_id):
-
-        cursor = self.cw.get_pgconn().cursor()
-
-        cursor.execute(textwrap.dedent("""
-            select folder_id, folder_title, folder_format->'Title' as
-            title,
-            parent_folder_id
-
-            from folders
-
-            where folder_id = any(get_all_folder_parents(%(folder_id)s))
-            or folder_id = %(folder_id)s
-            """), {'folder_id':folder_id})
-
-        return sorted(cursor.fetchall(), key=lambda row:row.folder_id)
 
 
 @decorator.decorator

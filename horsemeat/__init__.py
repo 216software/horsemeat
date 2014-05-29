@@ -27,7 +27,6 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, uuid.UUID):
           return str(obj)
 
-
         elif isinstance(obj, psycopg2.extras.DateTimeTZRange):
             return dict(lower=obj.lower, upper=obj.upper)
 
