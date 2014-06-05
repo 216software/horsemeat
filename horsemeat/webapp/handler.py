@@ -179,6 +179,9 @@ class Handler(object):
 
     def check_route_patterns(self, req):
 
+        if not self.route_patterns:
+            raise Exception("You need some route patterns!")
+
         for rp in self.route_patterns:
             match = req.line_one.test_for_match(rp)
 
@@ -191,6 +194,9 @@ class Handler(object):
                 return self.handle
 
     def check_route_strings(self, req):
+
+        if not self.route_strings:
+            raise Exception("You need to define some route strings!")
 
         if req.line_one in self.route_strings:
             return self.handle

@@ -209,8 +209,9 @@ class ConfigWrapper(object):
 
         return pgconn
 
-    # Make an alias because Matt can't remember stuff good.
+    # Make aliases because Matt can't remember stuff good.
     create_postgresql_connection = make_database_connection
+    make_postgresql_connection = make_database_connection
 
     @abc.abstractproperty
     def register_composite_types(self, pgconn):
