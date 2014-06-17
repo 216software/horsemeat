@@ -130,7 +130,7 @@ class ConfigWrapper(object):
         ...     cursor = pgconn.cursor()
         ...     cursor.execute("update ...")
 
-        ]and the transaction will be committed when you leave the with
+        and the transaction will be committed when you leave the with
         block.
 
         """
