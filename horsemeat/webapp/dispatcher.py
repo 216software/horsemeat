@@ -309,11 +309,7 @@ class Dispatcher(object):
 
         # 3.  Instantiate all the classes in the filtered list.
 
-        return [cls(
-                self.jinja2_environment,
-                self.dbconn,
-                self.config_wrapper,
-                self)
+        return [cls(self.config_wrapper, self)
 
             for name, cls in inspect.getmembers(m)
 

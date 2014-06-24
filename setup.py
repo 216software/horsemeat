@@ -6,6 +6,10 @@ setup(
 
     name='horsemeat',
 
+    author="216 Software, LLC",
+    author_email="info@216software.com",
+    url="https://github.com/216software/horsemeat",
+
     version=__version__,
 
     packages=find_packages(),

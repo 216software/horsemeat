@@ -27,13 +27,9 @@ class Handler(object):
 
     route_strings = set()
 
-    def __init__(self, jinja2_environment, pgconn, config_wrapper,
-    dispatcher):
+    def __init__(self, config_wrapper, dispatcher):
 
-        self.jinja2_environment = jinja2_environment
-        self.pgconn = pgconn
         self.config_wrapper = config_wrapper
-        self.dispatcher = dispatcher
 
         self.add_stuff_to_jinja2_globals()
         self.add_module_template_folder_to_jinja2_environment()
@@ -68,7 +64,6 @@ class Handler(object):
                 package_name,
                 template_folder)
 
-
     @property
     def j(self):
         return self.cw.get_jinja2_environment()
@@ -80,11 +75,6 @@ class Handler(object):
     @property
     def pgconn(self):
         return self.cw.get_pgconn()
-
-    @pgconn.setter(self, val):
-
-        if val:
-            warnings.warn("Stop using this and instead just ask the cw for a connection")
 
     @abc.abstractmethod
     def route(self, request):
