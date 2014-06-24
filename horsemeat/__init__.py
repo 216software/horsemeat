@@ -5,7 +5,7 @@ import json
 import pprint
 import uuid
 
-__version__ = '0.3.5'
+__version__ = '0.3.6'
 
 class HorsemeatJSONEncoder(json.JSONEncoder):
 
@@ -30,8 +30,11 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, psycopg2.extras.DateTimeTZRange):
             return dict(lower=obj.lower, upper=obj.upper)
 
+        # Stick your own type check stuff here.
+
         else:
             return json.JSONEncoder.default(self, obj)
+
 
 fancyjsondumps = functools.partial(
     json.dumps,

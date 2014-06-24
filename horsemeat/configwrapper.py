@@ -202,10 +202,8 @@ class ConfigWrapper(object):
         psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
         if register_composite_types:
-            self.register_horsemeat_composite_types(pgconn)
-            log.debug('Registered horsemeat composite types')
             self.register_composite_types(pgconn)
-            log.debug('Registered projects composite types')
+            log.debug('Registered project composite types')
 
         return pgconn
 
@@ -215,26 +213,7 @@ class ConfigWrapper(object):
 
     @abc.abstractproperty
     def register_composite_types(self, pgconn):
-
         raise NotImplementedError
-
-
-    def register_horsemeat_composite_types(self, pgconn):
-
-        from horsemeat.model.user import PersonFactory
-
-        psycopg2.extras.register_composite('people', pgconn,
-            factory=PersonFactory)
-
-        from horsemeat.model.session import SessionFactory
-
-        psycopg2.extras.register_composite('horsemeat_sessions', pgconn,
-          factory=SessionFactory)
-
-        log.info('Just registered composite types in psycopg2')
-
-        return pgconn
-
 
     def configure_logging(self, process_type='default'):
 
