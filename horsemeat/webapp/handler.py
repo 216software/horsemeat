@@ -30,6 +30,7 @@ class Handler(object):
     def __init__(self, config_wrapper, dispatcher):
 
         self.config_wrapper = config_wrapper
+        self.dispatcher = dispatcher
 
         self.add_stuff_to_jinja2_globals()
         self.add_module_template_folder_to_jinja2_environment()

@@ -5,7 +5,7 @@ import json
 import pprint
 import uuid
 
-__version__ = '0.3.6'
+__version__ = '2.0.1'
 
 class HorsemeatJSONEncoder(json.JSONEncoder):
 
