@@ -29,6 +29,7 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
             return dict(lower=obj.lower, upper=obj.upper)
 
         # Stick your own type check stuff here.
+        # End of your own stuff.
 
         else:
             return json.JSONEncoder.default(self, obj)
