@@ -37,6 +37,10 @@ class Dispatcher(object):
 
         raise NotImplementedError
 
+    @abc.abstractproperty
+    def error_page(self):
+
+        raise NotImplementedError
 
 
     def __init__(self, jinja2_environment, pgconn, config_wrapper):
@@ -47,9 +51,6 @@ class Dispatcher(object):
 
         self.handlers = []
         self.make_handlers()
-
-        self.error_page = self.jinja2_environment.get_template(
-            'framework_templates/error.html')
 
         log.info("Dispatcher __init__ complete!  Framework is ready.")
 
