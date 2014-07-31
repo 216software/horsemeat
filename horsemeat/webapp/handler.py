@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 module_template_prefix = 'framework'
 module_template_package = 'horsemeat.webapp.framework.framework_templates'
 
+
 class Handler(object):
 
     __metaclass__ = abc.ABCMeta
@@ -27,6 +28,7 @@ class Handler(object):
 
     route_strings = set()
 
+
     def __init__(self, config_wrapper, dispatcher):
 
         self.config_wrapper = config_wrapper
@@ -34,6 +36,7 @@ class Handler(object):
 
         self.add_stuff_to_jinja2_globals()
         self.add_module_template_folder_to_jinja2_environment()
+
 
     @property
     def cw(self):
@@ -50,6 +53,7 @@ class Handler(object):
         # In general, when I modify self, I return it.
         return self
 
+
     def add_module_template_folder_to_jinja2_environment(self):
 
         m = sys.modules[self.__module__]
@@ -65,17 +69,21 @@ class Handler(object):
                 package_name,
                 template_folder)
 
+
     @property
     def j(self):
         return self.cw.get_jinja2_environment()
+
 
     @property
     def templates(self):
         return self.cw.get_jinja2_environment()
 
+
     @property
     def pgconn(self):
         return self.cw.get_pgconn()
+
 
     @abc.abstractmethod
     def route(self, request):
@@ -83,11 +91,16 @@ class Handler(object):
         Subclasses must define me!
         """
 
+        raise NotImplementedError
+
+
     @abc.abstractmethod
     def handle(self, request):
         """
         Subclasses must define me!
         """
+
+        raise NotImplementedError
 
     def prompt_for_login(self, req):
 
@@ -147,6 +160,7 @@ class Handler(object):
     def four_zero_four_template(self):
         raise NotImplementedError
 
+
     def not_found(self, req):
 
         """
@@ -167,6 +181,7 @@ class Handler(object):
         resp.status = '404 NOT FOUND'
 
         return resp
+
 
     def check_route_patterns(self, req):
 
@@ -200,26 +215,14 @@ class Handler(object):
             self.__class__.__name__)
 
 
-@decorator.decorator
-def ask_for_login_if_anonymous(handle, h, req):
+    def on_startup(self):
 
-    """
-    This decorator might cause too much confusion, and if you put it
-    on the route, not the handle method, you'll cause all sorts of bugs
-    by intercepting a request meant for some other handler.
+        """
+        Subclasses MAY fill this in if they want to do
+        run some code on startup.
 
-    On the plus side, it might be nice to have a conventional way to
-    test for a logged-in user (given that the req.line_one stuff
-    matches).
+        But they don't have to define it if they don't want to.
+        """
 
-    And, it could support some introspection.  In other words, we could
-    ask a handler "do you have the ask_for_login_if_anonymous
-    decorator?"
+        pass
 
-    """
-
-    if req.user:
-        return handle(h, req)
-
-    else:
-        return h.prompt_for_login(req)

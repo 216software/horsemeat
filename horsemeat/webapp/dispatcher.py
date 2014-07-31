@@ -51,6 +51,7 @@ class Dispatcher(object):
 
         self.handlers = []
         self.make_handlers()
+        self.run_all_on_startup_methods()
 
         log.info("Dispatcher __init__ complete!  Framework is ready.")
 
@@ -275,7 +276,6 @@ class Dispatcher(object):
 
         return obj
 
-
     def make_handlers_from_module_string(self, s):
 
         m = importlib.import_module(s)
@@ -290,6 +290,11 @@ class Dispatcher(object):
         #     virtual methods.
 
         # 3.  Instantiate all the classes in the filtered list.
+
+        # TODO: stop passing in lists of modules.  Pass in lists of
+        # classes, and then we won't need this wacky complex logic to
+        # ignore some classes we get.  And we also will provide more
+        # control about the order.
 
         return [cls(self.config_wrapper, self)
 
@@ -309,7 +314,22 @@ class Dispatcher(object):
             and getattr(cls.route, '__isabstractmethod__', False) is False
             ]
 
+
     @abc.abstractmethod
     def make_handlers(self):
 
         raise NotImplementedError
+
+
+    def run_all_on_startup_methods(self):
+
+        for h in self.handlers:
+
+            if hasattr(h, 'on_startup') \
+            and inspect.ismethod(h.on_startup):
+
+                h.on_startup()
+
+        self.cw.get_pgconn().commit()
+
+        log.info("All on-startup methods ran and database committed.")
