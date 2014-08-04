@@ -1,6 +1,5 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
 
-import abc
 import cgi
 import collections
 import Cookie
@@ -37,11 +36,6 @@ class Request(collections.MutableMapping):
         # This is the maximum amount of data to read into memory.
         # The number below is about 10 megabytes.
         self.maximum_buffer_size = 10 * 1000 * 1000
-
-    @abc.abstractproperty
-    def session_table_name(self):
-
-        raise NotImplementedError
 
     @property
     def HTTP_COOKIE(self):
@@ -438,13 +432,12 @@ class Request(collections.MutableMapping):
                 self['session_uuid'] = None
                 return
 
-            # Interpolate the name of the session table.
             qry = textwrap.dedent("""
-                select (s.*)::{0} as ts
-                from {0} s
+                select (s.*)::horsemeat_sessions as ts
+                from horsemeat_sessions s
                 where s.session_uuid = (%s)
                 and s.expires > current_timestamp
-                """).format(self.session_table_name)
+                """)
 
             cursor = self.pgconn.cursor()
 
