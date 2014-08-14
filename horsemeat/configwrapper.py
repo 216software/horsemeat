@@ -9,6 +9,7 @@ import logging.config
 import math
 import smtplib
 import sys
+import textwrap
 import traceback
 import uuid
 import warnings
@@ -350,7 +351,10 @@ class ConfigWrapper(object):
         return j
 
     def add_more_stuff_to_jinja2_globals(self):
-        log.info("Nothing extra to add...")
+        log.info(textwrap.dedent("""
+            Nothing extra to add.  You can add stuff in your
+            subclass if you want to..
+            """))
 
     def get_jinja2_environment(self):
 
@@ -358,6 +362,11 @@ class ConfigWrapper(object):
             self.make_jinja2_environment()
 
         return self.jinja2_environment
+
+    @property
+    def j(self):
+        return sef.get_jinja2_environment()
+
 
     @property
     def scheme(self):

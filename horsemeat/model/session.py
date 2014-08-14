@@ -256,3 +256,7 @@ class Session(object):
 
         if cursor.rowcount:
             return cursor.fetchone().gs
+
+    @property
+    def __jsondata__(self):
+        return self.__dict__
