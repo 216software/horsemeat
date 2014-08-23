@@ -20,7 +20,7 @@ class SessionInserter(object):
     def insert_query(self):
 
         return textwrap.dedent("""
-            insert into horsemeat_sessions
+            insert into webapp_sessions
             (
                 person_id,
                 news_message,
@@ -71,7 +71,7 @@ def set_project_id_in_session(pgconn, session_uuid, project_id):
         session_data['project_id'] = str(project_id)
 
         cursor.execute(textwrap.dedent("""
-            update horsemeat_session_data
+            update webapp_session_data
             set session_data = (%s)
             where session_uuid = (%s)
             and namespace = (%s)
@@ -79,12 +79,12 @@ def set_project_id_in_session(pgconn, session_uuid, project_id):
 
     else:
 
-        # If a horsemeat_session_data row doesn't exist, insert one.
+        # If a webapp_session_data row doesn't exist, insert one.
 
         session_data = dict({'project_id': str(project_id)})
 
         cursor.execute(textwrap.dedent("""
-            insert into horsemeat_session_data
+            insert into webapp_session_data
             (session_uuid, namespace, session_data)
             values
             (%s, %s, %s)
@@ -99,7 +99,7 @@ def get_all_session_namespaces(pgconn, session_uuid):
         select session_uuid, namespace, session_data, inserted,
         updated
 
-        from horsemeat_session_data
+        from webapp_session_data
 
         where session_uuid = (%s)
         """), [session_uuid])
@@ -120,7 +120,7 @@ def get_one_session_namespace(pgconn, session_uuid, namespace):
         select session_uuid, namespace, session_data, inserted,
         updated
 
-        from horsemeat_session_data
+        from webapp_session_data
 
         where session_uuid = (%s)
         and namespace = (%s)
@@ -138,7 +138,7 @@ def set_binder_id_in_session(pgconn, session_uuid, binder_id):
         session_data['binder_id'] = str(binder_id)
 
         cursor.execute(textwrap.dedent("""
-            update horsemeat_session_data
+            update webapp_session_data
             set session_data = (%s)
             where session_uuid = (%s)
             and namespace = (%s)
@@ -146,12 +146,12 @@ def set_binder_id_in_session(pgconn, session_uuid, binder_id):
 
     else:
 
-        # If a horsemeat_session_data row doesn't exist, insert one.
+        # If a webapp_session_data row doesn't exist, insert one.
 
         session_data = dict({'binder_id': str(binder_id)})
 
         cursor.execute(textwrap.dedent("""
-            insert into horsemeat_session_data
+            insert into webapp_session_data
             (session_uuid, namespace, session_data)
             values
             (%s, %s, %s)
@@ -182,7 +182,7 @@ class Session(object):
         cursor = pgconn.cursor()
 
         cursor.execute(textwrap.dedent("""
-            update horsemeat_sessions
+            update webapp_sessions
             set expires = default
             where session_uuid = (%(session_uuid)s)
             and expires > current_timestamp
@@ -199,7 +199,7 @@ class Session(object):
 
         cursor.execute(textwrap.dedent("""
             select session_data
-            from horsemeat_session_data
+            from webapp_session_data
             where session_uuid = %s
             and namespace = %s
             """), [self.session_uuid, namespace])
@@ -220,7 +220,7 @@ class Session(object):
             cursor = pgconn.cursor()
 
             cursor.execute(textwrap.dedent("""
-                delete from horsemeat_session_data
+                delete from webapp_session_data
                 where session_uuid = %s
                 and namespace = %s
                 """), [self.session_uuid, namespace])
@@ -239,7 +239,7 @@ class Session(object):
         cursor = pgconn.cursor()
 
         cursor.execute(textwrap.dedent("""
-            insert into horsemeat_sessions
+            insert into webapp_sessions
             (person_id)
             select person_id
             from people
@@ -248,7 +248,7 @@ class Session(object):
                 %(password)s,
                 salted_hashed_password)
             and person_status = 'confirmed'
-            returning (horsemeat_sessions.*)::horsemeat_sessions as gs
+            returning (webapp_sessions.*)::webapp_sessions as gs
             """), {
                 "email_address": email_address,
                 "password": password})
