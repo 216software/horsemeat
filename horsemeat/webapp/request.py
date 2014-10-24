@@ -433,8 +433,8 @@ class Request(collections.MutableMapping):
                 return
 
             qry = textwrap.dedent("""
-                select (s.*)::horsemeat_sessions as ts
-                from horsemeat_sessions s
+                select (s.*)::webapp_sessions as ts
+                from webapp_sessions s
                 where s.session_uuid = (%s)
                 and s.expires > current_timestamp
                 """)
