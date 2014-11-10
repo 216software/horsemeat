@@ -346,17 +346,20 @@ class Request(collections.MutableMapping):
 
         if self.QUERY_STRING:
 
-            return '{0}{1}?{2}'.format(
-                self.config_wrapper.web_host,
+            return '{0}://{1}/{2}?{3}'.format(
+                self["wsgi.url_scheme"],
+                self.host,
                 self.PATH_INFO,
                 self.QUERY_STRING)
 
         else:
 
-            return '{0}{1}'.format(
-                self.config_wrapper.web_host,
+            return '{0}://{1}/{2}'.format(
+                self["wsgi.url_scheme"],
+                self.host,
                 self.PATH_INFO)
 
+    # aliases
     permalink = address_bar
 
     @property
