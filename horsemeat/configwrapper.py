@@ -244,7 +244,7 @@ class ConfigWrapper(object):
 
             elif isinstance(x, dict):
                 logging.config.dictConfig(x)
-                sys.excepthook = configwrapper.log_uncaught_exceptions
+                sys.excepthook = log_uncaught_exceptions
 
             else:
                 raise Exception("can not deal with x: {0}.".format(x))
@@ -525,18 +525,3 @@ def log_uncaught_exceptions(ex_cls, ex, tb):
         log.critical(ex.errors)
 
 
-if __name__ == "__main__":
-
-    import argparse
-
-    ap = argparse.ArgumentParser(
-        description="Print a value from the config file")
-
-    ap.add_argument("yaml_file_name")
-    ap.add_argument("property")
-
-    args = ap.parse_args()
-
-    cw = ConfigWrapper.from_yaml_file_name(args.yaml_file_name)
-
-    print(getattr(cw, args.property))
