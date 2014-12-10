@@ -18,7 +18,6 @@ import clepy
 import jinja2
 import pkg_resources
 import psycopg2, psycopg2.extras
-import pyrax
 import yaml
 
 from horsemeat import fancyjsondumps
@@ -436,6 +435,8 @@ class ConfigWrapper(object):
 
         if self.pyrax_connection:
             warnings.warn("NO! Use self.get_pyrax_connection instead!")
+
+        import pyrax
 
         pyrax.set_setting('identity_type',  'rackspace')
 

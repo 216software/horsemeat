@@ -61,6 +61,8 @@ class Handler(object):
         if hasattr(m, 'module_template_prefix') \
         and hasattr(m, 'module_template_package'):
 
+            # Throw an exception if I'm going to overwrite something!
+
             package_name, template_folder = \
             m.module_template_package.rsplit('.', 1)
 
