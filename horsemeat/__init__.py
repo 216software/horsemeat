@@ -6,7 +6,7 @@ import pprint
 import uuid
 
 __branch__ = "dos"
-__version__ = '2.5.2'
+__version__ = '2.5.3'
 
 class HorsemeatJSONEncoder(json.JSONEncoder):
 
@@ -30,7 +30,12 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, uuid.UUID):
           return str(obj)
 
-        elif isinstance(obj, psycopg2.extras.DateTimeTZRange):
+        elif isinstance(obj, [
+            psycopg2.extras.DateTimeTZRange,
+            psycopg2.extras.DateTimeRange,
+            psycopg2.extras.DateRange,
+            ]):
+
             return dict(lower=obj.lower, upper=obj.upper)
 
         # Stick your own type check stuff here.

@@ -1,0 +1,16 @@
++++++++++++
+Stuff to do
++++++++++++
+
+Sooner
+======
+
+**most urgent at the top**
+
+*   Set up travis or circleCI to try out on different
+    versions of python.
+
+
+
+
+.. vim: set syntax=rst:

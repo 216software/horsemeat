@@ -1,6 +1,7 @@
 # vim: set expandtab ts=4 sw=4 filetype=python:
 
 import abc
+import datetime
 import logging
 import sys
 import textwrap
@@ -228,3 +229,30 @@ class Handler(object):
 
         pass
 
+    @staticmethod
+    @decorator.decorator
+    def only_allow_superusers(handle_method, self, req):
+
+        """
+        Add this to a handle method like this::
+
+            @Handler.only_allow_superusers
+            def handle(self, req):
+                ...
+
+        And then, if the request isn't from a signed-in superuser,
+        they'll get a JSON reply below.
+
+        If the request is from a signed-in superuser, then your handle
+        method is normal.
+        """
+
+        if not req.user or not req.user.is_superuser:
+
+            return Response.json(dict(
+                message="Sorry, superusers only!",
+                success=False,
+                reply_timestamp=datetime.datetime.now()))
+
+        else:
+            return handle_method(self, req)
