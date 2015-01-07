@@ -9,7 +9,7 @@ setup(
     author="216 Software, LLC",
     author_email="info@216software.com",
     url="https://GitHub.com/216software/horsemeat",
-    description='Web framework for the damned. The mad.',
+    description='Web framework for the damned.  The mad.',
 
     version=__version__,
 
