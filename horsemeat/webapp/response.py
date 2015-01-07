@@ -356,6 +356,9 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
+
+            # I don't like getting fancyjsondumps like this because
+            # projects can't redefine how fancyjsondumps works!
             configwrapper.fancyjsondumps(data))
 
         return json_response
