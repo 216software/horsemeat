@@ -6,7 +6,7 @@ import pprint
 import uuid
 
 __branch__ = "dos"
-__version__ = '2.5.4'
+__version__ = '2.6.0'
 
 class HorsemeatJSONEncoder(json.JSONEncoder):
 

@@ -61,8 +61,9 @@ class ConfigWrapper(object):
     smtp_connection = None
     pyrax_connection = None
 
-    def __init__(self, config_dictionary):
+    def __init__(self, config_dictionary, yaml_file_name=None):
         self.config_dictionary = config_dictionary
+        self.yaml_file_name = yaml_file_name
 
     @classmethod
     def from_yaml_file_name(cls, filename, force_reload=False):
@@ -95,7 +96,7 @@ class ConfigWrapper(object):
                 cls.configmodule,
                 filename)
 
-            self = cls(yaml.load(stream))
+            self = cls(yaml.load(stream), yaml_file_name=filename)
 
             cls.instances[filename] = self
 
