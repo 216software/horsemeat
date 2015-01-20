@@ -209,17 +209,6 @@ class Dispatcher(object):
             cw.configure_logging()
             cw.verify_config_file()
 
-            if cw.production_mode:
-
-                cw.connect_everything()
-
-                from horsemeat import junkdrawer
-
-                # TODO: move this into trailhead repo
-                junkdrawer.set_CORS_headers_on_all_containers(
-                    cw.get_pyrax_connection(),
-                    cw.web_host)
-
         except Exception, ex:
             traceback.print_exc()
             raise

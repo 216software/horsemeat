@@ -54,7 +54,6 @@ class ConfigWrapper(object):
     postgresql_connection = None
     jinja2_environment = None
     smtp_connection = None
-    pyrax_connection = None
 
     def __init__(self, config_dictionary, yaml_file_name=None):
         self.config_dictionary = config_dictionary
@@ -146,18 +145,6 @@ class ConfigWrapper(object):
         finally:
             log.info("Committing postgresql connection...")
             self.postgresql_connection.commit()
-
-    @property
-    def pyrax_username(self):
-        return self.config_dictionary['cloudfiles']['username']
-
-    @property
-    def pyrax_api_key(self):
-        return self.config_dictionary['cloudfiles']['api-key'],
-
-    @property
-    def pyrax_region(self):
-        return "ORD"
 
     @property
     def database_host(self):
@@ -430,44 +417,6 @@ class ConfigWrapper(object):
         else:
             return self.config_dictionary['app']['launch_debugger_on_error']
 
-    def do_pyrax_stuff(self):
-
-        """
-        Probably needs a better name, like "authenticate with pyrax".
-        """
-
-        log.info("Setting up a new pyrax object...")
-
-        if self.pyrax_connection:
-            warnings.warn("NO! Use self.get_pyrax_connection instead!")
-
-        import pyrax
-
-        pyrax.set_setting('identity_type',  'rackspace')
-
-        pyrax.set_credentials(
-
-            self.config_dictionary['cloudfiles']['username'],
-            self.config_dictionary['cloudfiles']['api-key'],
-            region="ORD")
-
-        log.info("Set settings and credentials on pyrax")
-
-        return pyrax
-
-    def get_pyrax_connection(self):
-
-        """
-        Just like the other get_* methods, this returns an
-        already-created instance if it exists.
-        """
-
-        if not self.pyrax_connection:
-            self.pyrax_connection = self.do_pyrax_stuff()
-
-        return self.pyrax_connection
-
-
     def connect_everything(self):
 
         """
@@ -478,7 +427,6 @@ class ConfigWrapper(object):
         # well as their own on-bootup stuff.
 
         self.get_postgresql_connection()
-        self.get_pyrax_connection()
 
     @property
     def dev_mode(self):
