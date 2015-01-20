@@ -7,6 +7,7 @@ import json
 import logging
 import logging.config
 import math
+import os
 import smtplib
 import sys
 import textwrap
@@ -48,12 +49,6 @@ class ConfigWrapper(object):
     # instance, by using the set_as_default instance method.
     default_instance = None
 
-    # Keep a reference of the instances made from each yaml file.
-    instances = dict()
-
-    # Just an alias.
-    already_instantiated = instances
-
     # Keep these things at the class level, so that all instances share
     # them.
     postgresql_connection = None
@@ -66,13 +61,10 @@ class ConfigWrapper(object):
         self.yaml_file_name = yaml_file_name
 
     @classmethod
-    def from_yaml_file_name(cls, filename, force_reload=False):
+    def from_yaml_file_name(cls, filename):
 
         """
         Loads one of the yaml files in the config_files folder.
-
-        Calling this repeatedly for the same file WILL NOT reload the
-        file unless you set force_reload to True.
 
         If you are modifying the ConfigWrapper instance, then you're
         doing something wrong.
@@ -87,20 +79,32 @@ class ConfigWrapper(object):
         elif not cls.configmodule:
             raise ValueError("Sorry, you need to set cls.configmodule!")
 
-        if filename in cls.instances and not force_reload:
-            return cls.instances[filename]
-
         else:
 
             stream = pkg_resources.resource_stream(
                 cls.configmodule,
                 filename)
 
-            self = cls(yaml.load(stream), yaml_file_name=filename)
-
-            cls.instances[filename] = self
+            self = cls(yaml.safe_load(stream), yaml_file_name=filename)
 
             return self
+
+    @classmethod
+    def load_yaml(cls, path_to_file):
+
+        if not os.access(path_to_file, os.R_OK):
+
+            raise IOError("Sorry, can not read {0}!".format(
+                path_to_file))
+
+        else:
+
+            self = cls(
+                yaml.safe_load(open(path_to_file).read()),
+                yaml_file_name=os.path.basename(path_to_file))
+
+            return self
+
 
     @property
     def should_register_composite_types(self):
