@@ -5,17 +5,19 @@ import unittest
 from horsemeat import configwrapper
 
 class SubclassConfigWrapper(configwrapper.ConfigWrapper):
-    pass
 
+    @property
+    def dispatcher_class(self):
+        return None
 
 class TestSetDefault(unittest.TestCase):
 
     def test1(self):
 
-        cw1 = configwrapper.ConfigWrapper({})
+        cw1 = SubclassConfigWrapper({})
         cw1.set_as_default()
 
-        cw2 = configwrapper.ConfigWrapper.get_default()
+        cw2 = SubclassConfigWrapper.get_default()
 
         self.assertIs(cw1, cw2)
 

@@ -7,13 +7,11 @@ Sooner
 
 **most urgent at the top**
 
-*   Rethink how fancyjsondumps gets passed around and inserted into
-    jinja2 globals.
-
 *   Set up travis or circleCI to try out on different
     versions of python.
 
-
+*   Rethink how fancyjsondumps gets passed around and inserted into
+    jinja2 globals.
 
 
 .. vim: set syntax=rst:

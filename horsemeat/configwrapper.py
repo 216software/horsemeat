@@ -43,6 +43,8 @@ class ConfigWrapper(object):
     #
     #   "trailhead.configs.yaml_files"
     #
+    # I can't make it an abstract property, because properties are not
+    # available in classmethods.
     configmodule = None
 
     # Later, you can set up a particular instance as the default
@@ -63,15 +65,11 @@ class ConfigWrapper(object):
     def from_yaml_file_name(cls, filename):
 
         """
-        Loads one of the yaml files in the config_files folder.
+        Loads one of the yaml files in the yamlfiles folder.
 
-        If you are modifying the ConfigWrapper instance, then you're
-        doing something wrong.
-
-        >>> ConfigWrapper.from_yaml_file_name('matt.yaml') # doctest: +SKIP
-        <ConfigWrapper>
-
+        >>> cw = ConfigWrapper.from_yaml_file_name('dev.yaml') # doctest: +SKIP
         """
+
         if not filename:
             raise ValueError("Sorry, I need a filename!")
 
@@ -84,25 +82,37 @@ class ConfigWrapper(object):
                 cls.configmodule,
                 filename)
 
-            self = cls(yaml.safe_load(stream), yaml_file_name=filename)
+            self = cls(
+                yaml.safe_load(stream),
+                yaml_file_name=filename)
 
             return self
 
     @classmethod
     def load_yaml(cls, path_to_file):
 
-        if not os.access(path_to_file, os.R_OK):
+        """
+        First check if this is an absolute patch.
+        Next check if it is an file installed in this package.
+        """
 
-            raise IOError("Sorry, can not read {0}!".format(
-                path_to_file))
-
-        else:
+        if os.access(path_to_file, os.R_OK):
 
             self = cls(
                 yaml.safe_load(open(path_to_file).read()),
                 yaml_file_name=os.path.basename(path_to_file))
 
             return self
+
+        elif pkg_resources.resource_exists(
+            cls.configmodule,
+            path_to_file):
+
+            return cls.from_yaml_file_name(path_to_file)
+
+        else:
+            raise IOError("Sorry, can not load {0}!".format(
+                path_to_file))
 
 
     @property
@@ -195,7 +205,6 @@ class ConfigWrapper(object):
 
         if register_composite_types:
             self.register_composite_types(pgconn)
-            log.debug('Registered project composite types')
 
         return pgconn
 
@@ -203,9 +212,13 @@ class ConfigWrapper(object):
     create_postgresql_connection = make_database_connection
     make_postgresql_connection = make_database_connection
 
-    @abc.abstractproperty
     def register_composite_types(self, pgconn):
-        raise NotImplementedError
+
+        """
+        Subclasses can define this if they want to.
+        """
+
+        pass
 
     def configure_logging(self, process_type='default'):
 
@@ -378,8 +391,11 @@ class ConfigWrapper(object):
     def make_location_from_path(self, path):
 
         """
-        >>> cw = ConfigWrapper({'app': {'scheme': 'http', 'host': 'example.com'}})
-        >>> cw.make_location_from_path('/login')
+        >>> cw = ConfigWrapper({
+        ...     'app': {
+        ...         'scheme': 'http', 'host': 'example.com'}}) # doctest: +SKIP
+
+        >>> cw.make_location_from_path('/login') # doctest: +SKIP
         'http://example.com/login'
 
         """
