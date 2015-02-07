@@ -3,4 +3,4 @@ PyYAML>=3.10
 Werkzeug==0.8.3
 decorator==3.4.0
 psycopg2==2.5
-clepy>=0.3.21
+clepy>=0.3.22
