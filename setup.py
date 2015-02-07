@@ -1,6 +1,15 @@
+# vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
+
+import os
+import sys
+
 from setuptools import find_packages, setup
 
 from horsemeat import __version__
+
+# Read __version__ from version.py
+with open(os.path.join(os.getcwd(), "horsemeat", "version.py")) as f:
+    exec(f.read())
 
 setup(
 
