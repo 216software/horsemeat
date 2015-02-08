@@ -26,7 +26,7 @@ setup(
 
     include_package_data=True,
 
-    package_dir={'horsemeat': 'horsemeat'},
+    # package_dir={'horsemeat': 'horsemeat'},
 
     install_requires=[
         'decorator',
@@ -36,6 +36,8 @@ setup(
         'Werkzeug',
         'clepy',
     ],
+
+    test_suite = "nose.collector",
 
     use_2to3=True,
 )

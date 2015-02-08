@@ -1,11 +1,6 @@
 # vim: set expandtab ts=4 sw=4 filetype=python:
 
-# The use_2to3 option is supposed to handle this, but it ain't!  At
-# least not inside tox.
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
+import urlparse
 
 class BogusRequest(object):
 

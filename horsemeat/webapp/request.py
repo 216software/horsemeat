@@ -2,12 +2,7 @@
 
 import cgi
 import collections
-
-try:
-    import Cookie
-except ImportError:
-    import http.cookies as Cookie
-
+import Cookie
 import hmac
 import inspect
 import json
@@ -15,12 +10,7 @@ import logging
 import re
 import textwrap
 import urllib
-
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
-
+import urlparse
 import warnings
 import wsgiref.util
 
@@ -83,6 +73,9 @@ class Request(collections.MutableMapping):
 
         >>> req.parsed_QS['flavor'][0] == u'Jalapeño'
         True
+
+        >>> print req.parsed_QS['flavor'][0]
+        u'Jalapeño'
 
         """
 

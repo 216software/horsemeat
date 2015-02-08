@@ -3,7 +3,8 @@
 .vagrant
 .~lock*
 .coverage
-horsemeat.egg-info
-dist
-wheelhouse
+/horsemeat.egg-info
+/dist
+/wheelhouse
 /.tox
+/build
