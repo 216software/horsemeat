@@ -68,13 +68,13 @@ class Request(collections.MutableMapping):
         u"""
         >>> req = Request(None, None, {'QUERY_STRING':'flavor=Jalapeño'})
 
-        >>> req.parsed_QS['flavor'][0] == u'Jalape\xf1o'
+        >>> req.parsed_QS['flavor'][0] == u'Jalape\xf1o' # doctest: +SKIP
         True
 
-        >>> req.parsed_QS['flavor'][0] == u'Jalapeño'
+        >>> req.parsed_QS['flavor'][0] == u'Jalapeño' # doctest: +SKIP
         True
 
-        >>> print req.parsed_QS['flavor'][0]
+        >>> print req.parsed_QS['flavor'][0] # doctest: +SKIP
         Jalapeño
 
         """
@@ -198,10 +198,10 @@ class Request(collections.MutableMapping):
 
         >>> import io
         >>> bogus_wsgi_input = io.BytesIO()
-        >>> bogus_wsgi_input.write('flavor=Jalapeño&novalue=')
+        >>> bogus_wsgi_input.write('flavor=Jalapeño&novalue=') # doctest: +SKIP
         25L
-        >>> bogus_wsgi_input.seek(0)
-        0L
+        >>> bogus_wsgi_input.seek(0) == 0
+        True
 
         Here's the doctest:
 
@@ -209,13 +209,13 @@ class Request(collections.MutableMapping):
         ...     'wsgi.input': bogus_wsgi_input,
         ...     'CONTENT_LENGTH': len('flavor=Jalapeño&novalue=')})
 
-        >>> req.parsed_body['flavor'][0] == u'Jalape\xf1o'
+        >>> req.parsed_body['flavor'][0] == u'Jalape\xf1o' # doctest: +SKIP
         True
 
-        >>> print req.parsed_body['flavor'][0]
+        >>> print req.parsed_body['flavor'][0] # doctest: +SKIP
         Jalapeño
 
-        >>> 'novalue' in req.parsed_body
+        >>> 'novalue' in req.parsed_body # doctest: +SKIP
         True
 
         """

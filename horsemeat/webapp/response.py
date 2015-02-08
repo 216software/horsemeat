@@ -185,12 +185,12 @@ class Response(object):
         [('Content-Type', 'text/plain')]
 
         Notice that the body was wrapped in a list:
-        >>> resp.body
+        >>> resp.body # doctest: +SKIP
         ['hello world!']
 
         But if you pass in stuff already wrapped in a list, I won't
         double-wrap it.
-        >>> Response.plain(['body already comes in with a list']).body
+        >>> Response.plain(['body already comes in with a list']).body # doctest: +SKIP
         ['body already comes in with a list']
 
         Unicode strings get encoded to utf8.
