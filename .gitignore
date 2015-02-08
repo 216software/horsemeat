@@ -6,3 +6,4 @@
 horsemeat.egg-info
 dist
 wheelhouse
+/.tox

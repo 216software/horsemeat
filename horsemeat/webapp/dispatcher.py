@@ -121,7 +121,7 @@ class Dispatcher(object):
 
             return resp.body
 
-        except Exception, ex:
+        except Exception as ex:
 
             self.pgconn.rollback()
             log.critical(ex, exc_info=1)
@@ -209,7 +209,7 @@ class Dispatcher(object):
             cw.configure_logging()
             cw.verify_config_file()
 
-        except Exception, ex:
+        except Exception as ex:
             traceback.print_exc()
             raise
 
@@ -227,7 +227,7 @@ class Dispatcher(object):
             else:
                 return cls(j, pgconn, cw)
 
-        except Exception, ex:
+        except Exception as ex:
             log.critical(ex, exc_info=1)
             raise
 

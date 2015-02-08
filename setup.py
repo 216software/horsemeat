@@ -36,4 +36,6 @@ setup(
         'Werkzeug',
         'clepy',
     ],
+
+    use_2to3=True,
 )

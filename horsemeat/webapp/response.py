@@ -1,6 +1,10 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
 
-import Cookie
+try:
+    import Cookie
+except ImportError:
+    import http.cookies as Cookie
+
 import datetime
 import hmac
 import json
