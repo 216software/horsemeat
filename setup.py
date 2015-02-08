@@ -5,8 +5,6 @@ import sys
 
 from setuptools import find_packages, setup
 
-from horsemeat import __version__
-
 # Read __version__ from version.py
 with open(os.path.join(os.getcwd(), "horsemeat", "version.py")) as f:
     exec(f.read())
@@ -39,5 +37,9 @@ setup(
 
     use_2to3=True,
     test_suite="horsemeat.tests",
+
+    classifiers=[
+        'Programming Language :: Python :: 3'
+    ],
 
 )

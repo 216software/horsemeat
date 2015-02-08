@@ -75,7 +75,7 @@ class Request(collections.MutableMapping):
         True
 
         >>> print req.parsed_QS['flavor'][0]
-        u'Jalapeño'
+        Jalapeño
 
         """
 
