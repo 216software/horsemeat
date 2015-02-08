@@ -479,6 +479,8 @@ class ConfigWrapper(object):
     @abc.abstractproperty
     def dispatcher_class(self):
 
+        print "you have to define this in the subclass!"
+
         raise NotImplementedError
 
 class MissingConfig(KeyError):

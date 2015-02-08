@@ -37,7 +37,7 @@ setup(
         'clepy',
     ],
 
-    test_suite = "nose.collector",
-
     use_2to3=True,
+    test_suite="horsemeat.tests",
+
 )
