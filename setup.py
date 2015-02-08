@@ -33,10 +33,14 @@ setup(
         'psycopg2',
         'Werkzeug',
         'clepy',
+        'nose',
     ],
 
     use_2to3=True,
-    test_suite="horsemeat.tests",
+
+    # test_suite="horsemeat.tests",
+    test_suite="nose.collector",
+    # test_suite="horsemeat",
 
     classifiers=[
         'Programming Language :: Python :: 3'

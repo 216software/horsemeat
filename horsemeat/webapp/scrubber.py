@@ -81,10 +81,11 @@ class Scrubber(object):
         >>> Scrubber.validate_email_address('a@b.zzz')
         'a@b.zzz'
 
-        >>> Scrubber.validate_email_address('a@b')
-        Traceback (most recent call last):
-        ...
-        InvalidEmailAddress: a@b
+        >>> try:
+        ...     Scrubber.validate_email_address('a@b')
+        ... except Exception as ex:
+        ...     print "bad email!"
+        bad email!
 
         """
 
