@@ -1,0 +1,2 @@
+recursive-include horsemeat *.yaml *.yaml.example *.sql *.html
+include requirements.txt
