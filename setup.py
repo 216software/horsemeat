@@ -4,10 +4,16 @@ import os
 import sys
 
 from setuptools import find_packages, setup
+import pip
 
 # Read __version__ from version.py
 with open(os.path.join(os.getcwd(), "horsemeat", "version.py")) as f:
     exec(f.read())
+
+requirements = [str(req.req)
+    for req in pip.req.parse_requirements(
+        "requirements.txt",
+        session="setup.py")]
 
 setup(
 
@@ -26,15 +32,7 @@ setup(
 
     # package_dir={'horsemeat': 'horsemeat'},
 
-    install_requires=[
-        'decorator',
-        'PyYAML',
-        'jinja2==2.6',
-        'psycopg2',
-        'Werkzeug',
-        'clepy',
-        'nose',
-    ],
+    install_requires=requirements,
 
     use_2to3=True,
 
