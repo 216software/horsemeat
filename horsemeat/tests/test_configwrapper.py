@@ -35,5 +35,7 @@ class TestSetDefault(unittest.TestCase):
         configwrapper.ConfigWrapper.default_instance = None
         SubclassConfigWrapper.default_instance = None
 
+
+
 if __name__ == "__main__":
     unittest.main()

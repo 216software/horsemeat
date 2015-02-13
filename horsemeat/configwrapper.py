@@ -483,6 +483,10 @@ class ConfigWrapper(object):
 
         raise NotImplementedError
 
+    @property
+    def pidfile(self):
+        return self.config_dictionary["app"]["pidfile"]
+
 class MissingConfig(KeyError):
 
     """
