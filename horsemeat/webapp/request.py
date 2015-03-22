@@ -574,7 +574,12 @@ class Request(collections.MutableMapping):
 
     @property
     def is_JSON(self):
-        return 'json' in self.CONTENT_TYPE.lower()
+
+        if self.CONTENT_TYPE:
+            return 'json' in self.CONTENT_TYPE.lower()
+
+        else:
+            return False
 
 class BiggerThanMemoryBuffer(ValueError):
 
@@ -684,3 +689,13 @@ class LineOne(object):
     def test_for_match(self, x):
         return self == x
 
+
+    @property
+    def __jsondata__(self):
+
+        return dict(
+           is_JSON=self.is_JSON,
+           json=self.json if self.is_JSON else None,
+           session=self.session,
+           user=self.user,
+        )
