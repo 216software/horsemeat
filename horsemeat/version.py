@@ -12,7 +12,7 @@ Choice A is bad because it isn't easy to fire up a python session and
 then do::
 
     >>> import horsemeat
-    >>> horsemeat.__version__ # doctest: +SKIP
+    >>> horsemeat.version.__version__ # doctest: +SKIP
 
 to look up the version.
 
@@ -22,4 +22,4 @@ hasn't been installed yet.
 
 """
 
-__version__ = '2.10.0'
+__version__ = '2.10.1'

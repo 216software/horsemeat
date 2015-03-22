@@ -581,6 +581,16 @@ class Request(collections.MutableMapping):
         else:
             return False
 
+    @property
+    def __jsondata__(self):
+
+        return dict(
+           is_JSON=self.is_JSON,
+           json=self.json if self.is_JSON else None,
+           session=self.session,
+           user=self.user,
+        )
+
 class BiggerThanMemoryBuffer(ValueError):
 
     """
@@ -690,12 +700,3 @@ class LineOne(object):
         return self == x
 
 
-    @property
-    def __jsondata__(self):
-
-        return dict(
-           is_JSON=self.is_JSON,
-           json=self.json if self.is_JSON else None,
-           session=self.session,
-           user=self.user,
-        )
