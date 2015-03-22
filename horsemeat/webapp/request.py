@@ -589,6 +589,8 @@ class Request(collections.MutableMapping):
            json=self.json if self.is_JSON else None,
            session=self.session,
            user=self.user,
+           method=self.REQUEST_METHOD,
+           line_one=self.line_one,
         )
 
 class BiggerThanMemoryBuffer(ValueError):
