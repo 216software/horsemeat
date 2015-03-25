@@ -19,7 +19,6 @@ else
     unzip -q -d $PROJECTDIR /tmp/frippery.zip
     cd $PROJECTDIR
 
-
     # I do this for f in find... stuff three times because I have files
     # with paths like
     #
