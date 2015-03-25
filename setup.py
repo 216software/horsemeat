@@ -44,4 +44,7 @@ setup(
         'Programming Language :: Python :: 3'
     ],
 
+    scripts=[
+        "horsemeat/scripts/make-frippery-project",
+    ],
 )

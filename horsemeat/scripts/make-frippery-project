@@ -1,0 +1,52 @@
+#! /bin/bash -e
+
+if (( $# != 2 ))
+then
+
+    echo "usage: $0 ProjectName projectdir"
+    exit 99;
+
+else
+
+    PROJECTNAME=$1;
+    PROJECTDIR=$2;
+
+    # TODO: Make it easy to pass in the path to where to get the
+    # frippery.zip file, or download it as a fallback.
+
+    git archive HEAD --format=zip -o /tmp/frippery.zip --remote=ssh://jan.216software.com/var/git-bare-repositories/frippery
+
+    unzip -q -d $PROJECTDIR /tmp/frippery.zip
+    cd $PROJECTDIR
+
+
+    # I do this for f in find... stuff three times because I have files
+    # with paths like
+    #
+    #   frippery/frippery/webapp/frippery/framework/request.py
+    #   frippery/frippery/scripts/frippery-run-webapp
+    #
+    # It ain't the most elegant thing, but it works fine, and it is fast
+    # enough, so, who cares.
+    for f in `find -name "*frippery*"`; do
+        if [ -e $f ]; then
+            rename "s/frippery/$PROJECTDIR/" $f;
+        fi
+    done
+
+    for f in `find -name "*frippery*"`; do
+        if [ -e $f ]; then
+            rename "s/frippery/$PROJECTDIR/" $f;
+        fi
+    done
+
+    for f in `find -name "*frippery*"`; do
+        if [ -e $f ]; then
+            rename "s/frippery/$PROJECTDIR/" $f;
+        fi
+    done
+
+    find -type f | grep -v meta-INSTALL | xargs sed -i "s/Frippery/$PROJECTNAME/g"
+    find -type f | grep -v meta-INSTALL | xargs sed -i "s/frippery/$PROJECTDIR/g"
+
+fi
