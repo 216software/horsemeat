@@ -487,6 +487,11 @@ class ConfigWrapper(object):
     def pidfile(self):
         return self.config_dictionary["app"]["pidfile"]
 
+    @property
+    def webapp_port(self):
+        return self.config_dictionary["app"]["webapp_port"]
+
+
 class MissingConfig(KeyError):
 
     """
