@@ -73,8 +73,8 @@ class ConfigWrapper(object):
         if not filename:
             raise ValueError("Sorry, I need a filename!")
 
-            elif not cls.configmodule:
-                raise ValueError("Sorry, you need to set cls.configmodule!")
+        elif not cls.configmodule:
+            raise ValueError("Sorry, you need to set cls.configmodule!")
 
         else:
 
@@ -125,7 +125,7 @@ class ConfigWrapper(object):
 
         if not self.postgresql_connection:
 
-            self.make_database_connection(
+            pgconn = self.make_database_connection(
                 register_composite_types=register_composite_types)
 
             # Keep a reference to this connection, so that
