@@ -51,15 +51,15 @@ class ConfigWrapper(object):
     # instance, by using the set_as_default instance method.
     default_instance = None
 
-    # Keep these things at the class level, so that all instances share
-    # them.
-    postgresql_connection = None
-    jinja2_environment = None
-    smtp_connection = None
 
     def __init__(self, config_dictionary, yaml_file_name=None):
+
         self.config_dictionary = config_dictionary
         self.yaml_file_name = yaml_file_name
+
+        self.postgresql_connection = None
+        self.jinja2_environment = None
+        self.smtp_connection = None
 
     @classmethod
     def from_yaml_file_name(cls, filename):
@@ -73,8 +73,8 @@ class ConfigWrapper(object):
         if not filename:
             raise ValueError("Sorry, I need a filename!")
 
-        elif not cls.configmodule:
-            raise ValueError("Sorry, you need to set cls.configmodule!")
+            elif not cls.configmodule:
+                raise ValueError("Sorry, you need to set cls.configmodule!")
 
         else:
 
@@ -127,6 +127,10 @@ class ConfigWrapper(object):
 
             self.make_database_connection(
                 register_composite_types=register_composite_types)
+
+            # Keep a reference to this connection, so that
+            # we can just recycle this connection.
+            self.postgresql_connection = pgconn
 
         return self.postgresql_connection
 
@@ -192,10 +196,6 @@ class ConfigWrapper(object):
 
         log.info("Just made postgresql connection {0}.".format(
             pgconn))
-
-        # Keep a reference to this connection on the class, so that
-        # other instances can just recycle this connection.
-        self.__class__.postgresql_connection = pgconn
 
         psycopg2.extras.register_uuid()
         psycopg2.extras.register_hstore(pgconn, globally=True)
@@ -324,7 +324,7 @@ class ConfigWrapper(object):
 
         log.info("Just built a jinja2 environment")
 
-        self.__class__.jinja2_environment = j
+        self.jinja2_environment = j
 
         # Add a bunch of stuff to the template namespace.
         j.globals['ceil'] = math.ceil
