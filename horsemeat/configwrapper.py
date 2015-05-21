@@ -371,7 +371,7 @@ class ConfigWrapper(object):
 
     @property
     def j(self):
-        return sef.get_jinja2_environment()
+        return self.get_jinja2_environment()
 
 
     @property
