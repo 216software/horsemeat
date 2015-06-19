@@ -1,5 +1,6 @@
 # vim: set expandtab ts=4 sw=4 filetype=python:
 
+import decimal
 import functools
 import json
 import pprint
@@ -36,6 +37,9 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
             )):
 
             return dict(lower=obj.lower, upper=obj.upper)
+
+        elif isinstance(obj, decimal.Decimal):
+            return float(obj)
 
         # Stick your own type check stuff here.
         # End of your own stuff.

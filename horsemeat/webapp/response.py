@@ -438,4 +438,36 @@ class Response(object):
 
         self.headers.append(('Set-Cookie', c.output(header='').strip()))
 
+    @classmethod
+    def csv_file(cls, filelike, filename, FileWrap):
+
+        """
+
+        Here's an example usage::
+
+            query = textwrap.dedent('''
+                copy (
+                    select *
+                    from blah
+                )
+                to stdout with csv header
+                ''')
+
+            tf = tempfile.NamedTemporaryFile()
+
+            cursor.copy_expert(query, tf)
+
+            return Response.csv_file(filelike=tf,
+                                     filename='csv-data',
+                                     FileWrap=req.environ['wsgi.file_wrapper'])
+
+        """
+
+        block_size = 4096
+
+        return cls(
+            '200 OK',
+            [('Content-Type', 'text/csv'),
+             ('Content-Disposition', 'attachment; filename={0}'.format(filename))],
+            FileWrap(filelike, block_size))
 
