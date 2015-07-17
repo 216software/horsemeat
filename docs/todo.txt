@@ -8,6 +8,11 @@ Sooner
 *   Rethink how fancyjsondumps gets passed around and inserted into
     jinja2 globals.
 
+    Probably break it out into a completely stand-alone project.
+
+*   Write a nice and easy way to test handlers.  Right now, curl is the
+    fastest way to go.
+
 *   In the frippery code:
 
     *   Set up database logging
