@@ -423,8 +423,6 @@ class Response(object):
 
         template = j.get_template(template_name)
 
-        log.debug('Rendering template {0}...'.format(template_name))
-
         x = template.render(**data)
 
         return cls.html(x.encode('utf8'))

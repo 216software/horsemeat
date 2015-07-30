@@ -233,7 +233,7 @@ class Request(collections.MutableMapping):
             except UnicodeDecodeError as e:
 
                 log.exception(e)
-                log.debug("Cannot decode parsed body. Probably dealing with a file upload")
+                log.error("Cannot decode parsed body. Probably dealing with a file upload")
                 self['horsemeat.parsed_body'] = {}
 
         else:
