@@ -44,8 +44,5 @@ class Test1(unittest.TestCase):
         cw.j
 
 
-
-
-
 if __name__ == "__main__":
     unittest.main()
