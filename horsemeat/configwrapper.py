@@ -162,11 +162,11 @@ class ConfigWrapper(object):
 
     @property
     def database_host(self):
-        return self.config_dictionary['postgresql']['host']
+        return self.config_dictionary['postgresql'].get('host')
 
     @property
     def database_port(self):
-        return self.config_dictionary['postgresql']['port']
+        return self.config_dictionary['postgresql'].get('port')
 
     @property
     def database_database(self):
@@ -178,11 +178,11 @@ class ConfigWrapper(object):
 
     @property
     def database_user(self):
-        return self.config_dictionary['postgresql']['user']
+        return self.config_dictionary['postgresql'].get('user')
 
     @property
     def database_password(self):
-        return self.config_dictionary['postgresql']['password']
+        return self.config_dictionary['postgresql'].get('password')
 
     def make_database_connection(self, register_composite_types=True):
 
