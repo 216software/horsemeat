@@ -701,4 +701,7 @@ class LineOne(object):
     def test_for_match(self, x):
         return self == x
 
+    @property
+    def __jsondata__(self):
+        return str(self)
 
