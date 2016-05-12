@@ -5,13 +5,18 @@ Stuff to do
 Sooner
 ======
 
-**most urgent at the top**
-
-*   Set up travis or circleCI to try out on different
-    versions of python.
-
 *   Rethink how fancyjsondumps gets passed around and inserted into
     jinja2 globals.
 
+    Probably break it out into a completely stand-alone project.
+
+*   Write a nice and easy way to test handlers.  Right now, curl is the
+    fastest way to go.
+
+*   In the frippery code:
+
+    *   Set up database logging
+
+    *   Colorize stderr logging
 
 .. vim: set syntax=rst:

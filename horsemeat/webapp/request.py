@@ -233,7 +233,7 @@ class Request(collections.MutableMapping):
             except UnicodeDecodeError as e:
 
                 log.exception(e)
-                log.debug("Cannot decode parsed body. Probably dealing with a file upload")
+                log.error("Cannot decode parsed body. Probably dealing with a file upload")
                 self['horsemeat.parsed_body'] = {}
 
         else:
@@ -476,15 +476,15 @@ class Request(collections.MutableMapping):
             return self['user']
 
         # If we don't already have a user, see if we can look one up.
-        elif self.session and self.session.person_id:
+        elif self.session and self.session.person_uuid:
 
             cursor = self.pgconn.cursor()
 
             cursor.execute(textwrap.dedent("""
                 select (p.*)::people as user
                 from people p
-                where p.person_id = (%s)
-                """), [self.session.person_id])
+                where p.person_uuid = (%s)
+                """), [self.session.person_uuid])
 
             row = cursor.fetchone()
 
@@ -701,4 +701,7 @@ class LineOne(object):
     def test_for_match(self, x):
         return self == x
 
+    @property
+    def __jsondata__(self):
+        return str(self)
 

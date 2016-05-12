@@ -48,7 +48,6 @@ class Handler(object):
         if self.add_these_to_jinja2_globals:
 
             for k, v in self.add_these_to_jinja2_globals.items():
-                log.debug('Adding {0} to jinja2 globals...'.format(k))
                 self.j.globals[k] = v
 
         # In general, when I modify self, I return it.
