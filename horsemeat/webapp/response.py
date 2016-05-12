@@ -423,20 +423,34 @@ class Response(object):
 
         template = j.get_template(template_name)
 
-        log.debug('Rendering template {0}...'.format(template_name))
-
         x = template.render(**data)
 
         return cls.html(x.encode('utf8'))
 
 
-    def set_session_cookie(self, session_uuid, secret):
+    def set_session_cookie(self, session_uuid, secret, expires_date=None):
+
+        """
+
+        Sets two cookies -- session_uuid and session_hexdigest
+
+        if expires is not none, then set the cookie to expire based
+        on variable
+
+        """
 
         c = Cookie.SimpleCookie()
+        c1 = Cookie.SimpleCookie()
         c['session_uuid'] = session_uuid
-        c['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+        c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+
+        if expires_date:
+            c['session_uuid']['expires'] = expires_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            c1['session_hexdigest']['expires'] = \
+                expires_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         self.headers.append(('Set-Cookie', c.output(header='').strip()))
+        self.headers.append(('Set-Cookie', c1.output(header='').strip()))
 
     @classmethod
     def csv_file(cls, filelike, filename, FileWrap):
