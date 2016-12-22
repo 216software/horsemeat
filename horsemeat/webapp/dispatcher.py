@@ -136,14 +136,31 @@ class Dispatcher(object):
 
                 log.critical(environ)
 
-                start_response(
-                    '500 ERROR',
-                    [('Content-Type', 'text/html; charset=utf-8')],
-                    sys.exc_info())
+                if req.is_JSON:
 
-                s = self.error_page.render()
 
-                return [s.encode('utf8')]
+                    resp = Response.json(dict(
+                        reply_timestamp=datetime.datetime.now(),
+                        message="Error encountered '{0}'".format(ex),
+                        success=False))
+
+                    resp.status = '500 ERROR'
+
+                    start_response(resp.status, resp.headers)
+
+                    log.info('Replying with status %s.\n' % resp.status)
+
+                    return resp.body
+
+                else:
+                    start_response(
+                        '500 ERROR',
+                        [('Content-Type', 'text/html; charset=utf-8')],
+                        sys.exc_info())
+
+                    s = self.error_page.render()
+
+                    return [s.encode('utf8')]
 
 
     def dispatch(self, request):

@@ -116,6 +116,15 @@ class Handler(object):
 
             resp.status = '401 UNAUTHORIZED'
 
+        if req.is_JSON:
+            resp = Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message="You have to log in first!",
+                success=False))
+
+            resp.status = '401 UNAUTHORIZED'
+
+
         else:
             resp = Response.relative_redirect('/login',
                 'You have to log in first!')
@@ -176,6 +185,12 @@ class Handler(object):
         #Determine what we return based on request type
         if req.is_AJAX:
             resp = Response.plain("404 NOT FOUND")
+
+        if req.is_JSON:
+            resp = Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message="404 NOT FOUND '{0}'".format(req.line_one),
+                success=False))
 
         else:
             resp = Response.tmpl(self.four_zero_four_template)
