@@ -350,6 +350,8 @@ class Response(object):
             response_status = '400 Bad Request'
         elif status == '404':
             response_status = '400 Not Found'
+        elif status == '500':
+            response_status = '500 Error'
         else:
             response_status = '200 OK'
 
