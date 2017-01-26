@@ -117,8 +117,10 @@ class Dispatcher(object):
 
             # If access control, reply out
             # request's host
+
             if self.enable_access_control:
-               "http://{0}".format(dict(req.wz_req.headers).get('Host'))
+               resp.headers.append(('Access-Control-Allow-Origin',
+                   "http://{0}".format(dict(req.wz_req.headers).get('Host'))))
 
 
             start_response(resp.status, resp.headers)
