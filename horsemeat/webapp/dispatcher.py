@@ -122,7 +122,7 @@ class Dispatcher(object):
                resp.headers.append(('Access-Control-Allow-Origin',
                    "http://{0}".format(dict(req.wz_req.headers).get('Host'))))
 
-
+            import ipdb; ipdb.set_trace()
             start_response(resp.status, resp.headers)
 
             log.info('Replying with status %s.\n' % resp.status)
