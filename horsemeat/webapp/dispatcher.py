@@ -119,10 +119,13 @@ class Dispatcher(object):
             # request's host
 
             if self.enable_access_control:
-               resp.headers.append(('Access-Control-Allow-Origin',
-                   "http://{0}".format(dict(req.wz_req.headers).get('Host'))))
+                resp.headers.append(('Access-Control-Allow-Origin',
+                    dict(req.wz_req.headers).get('Origin', '*')))
 
-            import ipdb; ipdb.set_trace()
+                resp.headers.append(('Access-Control-Allow-Credentials',
+                    'true'))
+
+
             start_response(resp.status, resp.headers)
 
             log.info('Replying with status %s.\n' % resp.status)
