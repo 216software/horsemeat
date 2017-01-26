@@ -455,6 +455,10 @@ class ConfigWrapper(object):
     def production_mode(self):
         return not self.dev_mode
 
+    @property
+    def enable_access_control(self):
+        return self.config_dictionary['app'].get('access_control', False)
+
     def build_webapp(self):
 
         self.set_as_default()
@@ -466,7 +470,8 @@ class ConfigWrapper(object):
         j = self.get_jinja2_environment()
         pgconn = self.get_postgresql_connection()
 
-        return self.dispatcher_class(j, pgconn, self)
+        return self.dispatcher_class(j, pgconn, self,
+            self.enable_access_control)
 
     def run_production_mode_stuff(self):
 

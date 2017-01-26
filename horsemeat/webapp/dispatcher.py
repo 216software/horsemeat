@@ -43,11 +43,14 @@ class Dispatcher(object):
         raise NotImplementedError
 
 
-    def __init__(self, jinja2_environment, pgconn, config_wrapper):
+    def __init__(self, jinja2_environment, pgconn, config_wrapper,
+        enable_access_control=False):
 
         self.jinja2_environment = jinja2_environment
         self.pgconn = pgconn
         self.config_wrapper = config_wrapper
+
+        self.enable_access_control = enable_access_control
 
         self.handlers = []
         self.make_handlers()
@@ -111,6 +114,12 @@ class Dispatcher(object):
                     self.pgconn)
 
             self.pgconn.commit()
+
+            # If access control, reply out
+            # request's host
+            if self.enable_access_control:
+               "http://{0}".format(dict(req.wz_req.headers).get('Host'))
+
 
             start_response(resp.status, resp.headers)
 
