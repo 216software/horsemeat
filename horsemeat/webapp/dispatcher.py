@@ -83,12 +83,26 @@ class Dispatcher(object):
             self.jinja2_environment.globals['request'] = req
             self.jinja2_environment.globals['req'] = req
 
-            log.info('Got request {0} {1}'.format(
-                req.REQUEST_METHOD, req.path_and_qs))
+            resp = None
+            try:
 
-            handle_function = self.dispatch(req)
+                log.info('Got request {0} {1}'.format(
+                    req.REQUEST_METHOD, req.path_and_qs))
 
-            resp = handle_function(req)
+                handle_function = self.dispatch(req)
+
+                resp = handle_function(req)
+            except Exception as e:
+
+                # The postgres connection might be dead...
+
+                self.config_wrapper.postgresql_connection = None
+                self.pgconn = self.config_wrapper.get_pgconn(log_info=False)
+
+                handle_function = self.dispatch(req)
+
+                resp = handle_function(req)
+
 
             if not isinstance(resp, Response):
                 raise Exception("Handler didn't return a response object!")

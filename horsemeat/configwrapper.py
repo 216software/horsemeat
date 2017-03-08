@@ -121,12 +121,14 @@ class ConfigWrapper(object):
           return self.config_dictionary['postgresql'].get(
                'should_register_composite_types', False)
 
-    def get_postgresql_connection(self, register_composite_types=True):
+    def get_postgresql_connection(self, register_composite_types=True,
+        log_info=True):
 
         if not self.postgresql_connection:
 
             pgconn = self.make_database_connection(
-                register_composite_types=register_composite_types)
+                register_composite_types=register_composite_types,
+                log_info=log_info)
 
             # Keep a reference to this connection, so that
             # we can just recycle this connection.
@@ -184,7 +186,8 @@ class ConfigWrapper(object):
     def database_password(self):
         return self.config_dictionary['postgresql'].get('password')
 
-    def make_database_connection(self, register_composite_types=True):
+    def make_database_connection(self, register_composite_types=True,
+        log_info=True):
 
         pgconn = psycopg2.connect(
             connection_factory=psycopg2.extras.NamedTupleConnection,
@@ -194,8 +197,9 @@ class ConfigWrapper(object):
             user=self.database_user,
             password=self.database_password)
 
-        log.info("Just made postgresql connection {0}.".format(
-            pgconn))
+        if log_info:
+            log.info("Just made postgresql connection {0}.".format(
+                pgconn))
 
         psycopg2.extras.register_uuid()
         psycopg2.extras.register_hstore(pgconn, globally=True)
@@ -204,7 +208,7 @@ class ConfigWrapper(object):
         psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
         if register_composite_types:
-            self.register_composite_types(pgconn)
+            self.register_composite_types(pgconn, log_info=log_info)
 
         return pgconn
 
@@ -212,7 +216,7 @@ class ConfigWrapper(object):
     create_postgresql_connection = make_database_connection
     make_postgresql_connection = make_database_connection
 
-    def register_composite_types(self, pgconn):
+    def register_composite_types(self, pgconn, log_info=True):
 
         """
         Subclasses can define this if they want to.
