@@ -430,7 +430,8 @@ class Response(object):
         return cls.html(x.encode('utf8'))
 
 
-    def set_session_cookie(self, session_uuid, secret, expires_date=None):
+    def set_session_cookie(self, session_uuid, secret,
+        expires_date=None, path='/'):
 
         """
 
@@ -444,7 +445,11 @@ class Response(object):
         c = Cookie.SimpleCookie()
         c1 = Cookie.SimpleCookie()
         c['session_uuid'] = session_uuid
+        c['session_uuid']['path'] = path
+
         c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+        c1['session_hexdigest']['path'] = path
+
 
         if expires_date:
             c['session_uuid']['expires'] = expires_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
