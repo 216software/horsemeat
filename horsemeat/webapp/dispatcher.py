@@ -152,6 +152,14 @@ class Dispatcher(object):
 
                 if req.is_JSON:
 
+                    if self.enable_access_control:
+                        resp.headers.append(('Access-Control-Allow-Origin',
+                            dict(req.wz_req.headers).get('Origin', '*')))
+
+                        resp.headers.append(('Access-Control-Allow-Credentials',
+                            'true'))
+
+
 
                     resp = Response.json(dict(
                         reply_timestamp=datetime.datetime.now(),
