@@ -208,7 +208,7 @@ class ConfigWrapper(object):
 
         return pgconn
 
-    # Make aliases because Matt can't remember stuff good.
+    # Make aliases because Matt can't remember stuff well.
     create_postgresql_connection = make_database_connection
     make_postgresql_connection = make_database_connection
 
