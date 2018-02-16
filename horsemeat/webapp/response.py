@@ -55,8 +55,12 @@ class Response(object):
         if isinstance(val, FileWrapper):
             self._body = val
 
-        else:
+        # Remember that in python 3, unicode stuff is just a string.
+        elif isinstance(val, str):
             self._body = clepy.listmofize(bytes(val, "utf-8"))
+
+        else:
+            self._body = clepy.listmofize(val)
 
     @body.setter
     def body(self, val):
