@@ -7,6 +7,7 @@ import json
 import logging
 import pprint
 import urllib
+import sys
 
 import clepy
 
@@ -15,7 +16,6 @@ from horsemeat import configwrapper
 log = logging.getLogger(__name__)
 
 class Response(object):
-
 
     def __init__(self, status, headers, body):
         self.status = status
@@ -26,15 +26,46 @@ class Response(object):
     def body(self):
         return self._body
 
-    @body.setter
-    def body(self, val):
+    def body_python2(self, val):
+
+        """
+        This is the body setter for python 2.
+
+        If the body isn't wrapped in a list, I'll wrap it in a list, but
+        only if the data is not a file wrapper!
+        """
+
+        from gunicorn.http.wsgi import FileWrapper
+
+        if not isinstance(val, FileWrapper):
+            self._body = clepy.listmofize(val)
+        else:
+            self._body = val
+
+    def body_python3(self, val):
 
         """
         If the body isn't wrapped in a list, I'll wrap it in a list.
+
+        (Only if it's not a file wrapper)
         """
 
-        self._body = clepy.listmofize(val)
+        from gunicorn.http.wsgi import FileWrapper
 
+        if isinstance(val, FileWrapper):
+            self._body = val
+
+        else:
+            self._body = clepy.listmofize(bytes(val, "utf-8"))
+
+    @body.setter
+    def body(self, val):
+
+        if sys.version_info.major == 3:
+            return self.body_python3(val)
+
+        else:
+            return self.body_python2(val)
 
     def add_nocache_header(self):
 
