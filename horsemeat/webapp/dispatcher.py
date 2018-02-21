@@ -115,15 +115,16 @@ class Dispatcher(object):
 
             self.pgconn.commit()
 
-            # If access control, reply out
-            # request's host
-
             if self.enable_access_control:
-                resp.headers.append(('Access-Control-Allow-Origin',
-                    dict(req.wz_req.headers).get('Origin', '*')))
 
-                resp.headers.append(('Access-Control-Allow-Credentials',
-                    'true'))
+                # Don't add it redundantly!
+                if 'Access-Control-Allow-Origin' not in [key for (key, val) in resp.headers]:
+
+                    resp.headers.append(('Access-Control-Allow-Origin',
+                        dict(req.wz_req.headers).get('Origin', '*')))
+
+                    resp.headers.append(('Access-Control-Allow-Credentials',
+                        'true'))
 
 
             start_response(resp.status, resp.headers)
