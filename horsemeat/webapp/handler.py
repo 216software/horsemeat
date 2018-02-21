@@ -274,10 +274,6 @@ class Handler(object):
     def four_zero_four_template(self):
         return 'framework_templates/404.html'
 
-    def not_found(self, req):
-
-        return super(Handler, self).not_found(req)
-
     @staticmethod
     @decorator.decorator
     def require_login(handler_method, self, req):
