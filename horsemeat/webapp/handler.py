@@ -170,6 +170,32 @@ class Handler(object):
     def four_zero_four_template(self):
         raise NotImplementedError
 
+    def not_found_AJAX(self, req):
+
+        resp = Response.plain("404 NOT FOUND")
+        resp.status = '404 NOT FOUND'
+
+        return resp
+
+    def not_found_JSON(self, req):
+
+        resp = Response.json(dict(
+            reply_timestamp=datetime.datetime.now(),
+            message="404 NOT FOUND '{0}'".format(req.line_one),
+            success=False))
+
+        resp.status = '404 NOT FOUND'
+
+        return resp
+
+    def not_found_HTML(self, req):
+
+        resp = Response.tmpl(self.four_zero_four_template)
+
+        resp.status = '404 NOT FOUND'
+
+        return resp
+
 
     def not_found(self, req):
 
@@ -183,20 +209,13 @@ class Handler(object):
 
         #Determine what we return based on request type
         if req.is_AJAX:
-            resp = Response.plain("404 NOT FOUND")
+            return self.not_found_AJAX(req)
 
         if req.is_JSON:
-            resp = Response.json(dict(
-                reply_timestamp=datetime.datetime.now(),
-                message="404 NOT FOUND '{0}'".format(req.line_one),
-                success=False))
+            return self.not_found_JSON(req)
 
         else:
-            resp = Response.tmpl(self.four_zero_four_template)
-
-        resp.status = '404 NOT FOUND'
-
-        return resp
+            return self.not_found_HTML(req)
 
 
     def check_route_patterns(self, req):
