@@ -486,7 +486,7 @@ class Response(object):
             c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
 
         else:
-            c1['session_hexdigest'] = hmac.HMAC(secret, bytes(str(session_uuid), "utf8")).hexdigest()
+            c1['session_hexdigest'] = hmac.HMAC(bytes(secret, "utf8"), bytes(str(session_uuid), "utf8")).hexdigest()
 
 
         c1['session_hexdigest']['path'] = path
