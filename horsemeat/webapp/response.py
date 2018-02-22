@@ -482,7 +482,13 @@ class Response(object):
         c['session_uuid'] = session_uuid
         c['session_uuid']['path'] = path
 
-        c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+        if sys.version_info.major < 3:
+            c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+
+        else:
+            c1['session_hexdigest'] = hmac.HMAC(secret, bytes(str(session_uuid), "utf8")).hexdigest()
+
+
         c1['session_hexdigest']['path'] = path
 
 
