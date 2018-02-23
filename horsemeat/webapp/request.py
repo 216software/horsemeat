@@ -425,8 +425,11 @@ class Request(collections.MutableMapping):
             session_hexdigest = self.parsed_cookie['session_hexdigest'].value
 
             calculated_hexdigest = hmac.HMAC(
-                self.config_wrapper.app_secret,
-                str(session_uuid)).hexdigest()
+                bytes(
+                    str(self.config_wrapper.app_secret),
+                    "utf8"),
+                bytes(
+                    str(session_uuid), "utf8")).hexdigest()
 
             # Catch session IDs that have been tampered with.  There
             # really ought to be a way to do this in the SQL query,

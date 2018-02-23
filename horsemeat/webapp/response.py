@@ -416,11 +416,21 @@ class Response(object):
 
         if hmac_secret:
 
-            self.headers.append((
-                'Set-Cookie',
-                'news-message-hexdigest={0};'.format(hmac.HMAC(
-                    hmac_secret,
-                    quoted_messagetext).hexdigest())))
+            if sys.version_info.major < 3:
+
+                self.headers.append((
+                    'Set-Cookie',
+                    'news-message-hexdigest={0};'.format(hmac.HMAC(
+                        hmac_secret,
+                        str(quoted_messagetext)).hexdigest())))
+
+            else:
+
+                self.headers.append((
+                    'Set-Cookie',
+                    'news-message-hexdigest={0};'.format(hmac.HMAC(
+                        bytes(str(hmac_secret), "utf8"),
+                        bytes(str(quoted_messagetext), "utf8")).hexdigest())))
 
         return self
 
@@ -486,8 +496,9 @@ class Response(object):
             c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
 
         else:
-            c1['session_hexdigest'] = hmac.HMAC(bytes(secret, "utf8"), bytes(str(session_uuid), "utf8")).hexdigest()
-
+            c1['session_hexdigest'] = hmac.HMAC(
+                bytes(secret, "utf8"),
+                bytes(str(session_uuid), "utf8")).hexdigest()
 
         c1['session_hexdigest']['path'] = path
 
