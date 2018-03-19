@@ -83,8 +83,10 @@ class Dispatcher(object):
             self.jinja2_environment.globals['request'] = req
             self.jinja2_environment.globals['req'] = req
 
-            log.info('Got request {0} {1}'.format(
-                req.REQUEST_METHOD, req.path_and_qs))
+            log.info('Got request {0} {1} from {2}'.format(
+                req.REQUEST_METHOD,
+                req.path_and_qs,
+                req.client_IP_address))
 
             handle_function = self.dispatch(req)
 
@@ -92,14 +94,6 @@ class Dispatcher(object):
 
             if not isinstance(resp, Response):
                 raise Exception("Handler didn't return a response object!")
-
-            # Maybe if the route method returned self, rather than
-            # self.handle, at this point, we could do a test like
-            #
-            #     if callable(getattr(h, 'after_handle', None))
-            #
-            # and then all this stuff could be defined on the
-            # handler.Handler class rather than in here.
 
             # TODO: make this happen as an automatic side effect of
             # reading the data, so that there is absolutely no risk at
