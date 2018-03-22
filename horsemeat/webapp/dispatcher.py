@@ -123,10 +123,17 @@ class Dispatcher(object):
 
             start_response(resp.status, resp.headers)
 
-            log.info('Replying with status %s.\n' % resp.status)
+            if resp.status.startswith('4'):
+                log.warn('Replying with status %s.\n' % resp.status)
 
-            if resp.status.startswith('30'):
+            elif resp.status.startswith('5'):
+                log.critical('Replying with status %s.\n' % resp.status)
+
+            elif resp.status.startswith('30'):
                 log.info('Redirecting to {0}.'.format(resp.headers))
+
+            else:
+                log.info('Replying with status %s.\n' % resp.status)
 
             return resp.body
 
