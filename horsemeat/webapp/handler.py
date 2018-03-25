@@ -354,7 +354,7 @@ class Handler(object):
 
             return Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
-                message="Sorry, invalid request!",
+                message="Sorry, I need Content-Type application/json!",
                 success=False))
 
         elif not self.check_all_required_keys_in_json(req):

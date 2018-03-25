@@ -59,7 +59,6 @@ class ConfigWrapper(object):
 
         self.postgresql_connection = None
         self.jinja2_environment = None
-        self.smtp_connection = None
 
     @classmethod
     def from_yaml_file_name(cls, filename):

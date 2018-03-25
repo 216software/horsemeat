@@ -19,8 +19,8 @@ from horsemeat.webapp.response import Response
 
 log = logging.getLogger(__name__)
 
-# Tell python to always SHOW the deprecation warnings.
-warnings.filterwarnings('always', category=DeprecationWarning)
+# Only show deprecation warnings once.
+warnings.filterwarnings('once', category=DeprecationWarning)
 
 class Dispatcher(object):
 
@@ -124,7 +124,7 @@ class Dispatcher(object):
             start_response(resp.status, resp.headers)
 
             if resp.status.startswith('4'):
-                log.warn('Replying with status %s.\n' % resp.status)
+                log.warning('Replying with status %s.\n' % resp.status)
 
             elif resp.status.startswith('5'):
                 log.critical('Replying with status %s.\n' % resp.status)
