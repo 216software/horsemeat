@@ -37,7 +37,6 @@ class Handler(object):
         self.add_stuff_to_jinja2_globals()
         self.add_module_template_folder_to_jinja2_environment()
 
-
     @property
     def cw(self):
         return self.config_wrapper
@@ -70,21 +69,17 @@ class Handler(object):
                 package_name,
                 template_folder)
 
-
     @property
     def j(self):
         return self.cw.get_jinja2_environment()
-
 
     @property
     def templates(self):
         return self.cw.get_jinja2_environment()
 
-
     @property
     def pgconn(self):
         return self.cw.get_pgconn()
-
 
     @abc.abstractmethod
     def route(self, request):
@@ -322,6 +317,34 @@ class Handler(object):
         else:
             return handler_method(self, req)
 
+
+    @staticmethod
+    @decorator.decorator
+    def get_session_from_cookie_or_json
+
+        if req.user:
+            return handler_method(self, req)
+
+        elif req.json and "session_uuid" not in req.json:
+
+			sesh = pg.sessions.Session.verify_session_uuid(
+				self.cw.get_pgconn(),
+				req.json["session_uuid"])
+
+			if sesh:
+				return handler_method(self, req)
+
+		else:
+
+            return Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message="Sorry, you need to log in first!",
+                needs_to_log_in=True,
+                success=False))
+
+        else:
+            return handler_method(self, req)
+
     required_json_keys = []
 
     def check_all_required_keys_in_json(self, req):
@@ -409,21 +432,51 @@ class Handler(object):
             return handler_method(self, req)
 
 
-    def verify_container(self, container_id):
+    @staticmethod
+    @decorator.decorator
+    def get_session_from_cookie_or_json_or_QS(handler_method, self, req):
 
-        try:
+        """
+        You can test this like so::
 
-            c = pg.containers.Container.by_container_id(
+            $ curl --data '{"session_uuid": "d5e19089-ce27-4ab9-b1d0-129a19c81a94"}' -H "Content-Type: application/json" http://circuit.xps/api/insert-club-fee
+
+            $ curl http://circuit.xps/api/insert-club-fee?"session_uuid=d5e19089-ce27-4ab9-b1d0-129a19c81a94"
+
+            $ curl 'http://circuit.xps/api/insert-club-fee' -H 'Cookie: session_uuid=d5e19089-ce27-4ab9-b1d0-129a19c81a94; session_hexdigest=162719e3a569b048b005d6d5140fe884'
+
+        """
+
+        found_session = False
+
+        if req.user:
+            found_session = True
+
+        elif req.json and "session_uuid" in req.json:
+
+            sesh = pg.sessions.Session.verify_session_uuid(
                 self.cw.get_pgconn(),
-                container_id)
+                req.json["session_uuid"])
 
-        except KeyError:
+            if sesh:
+                found_session = True
 
-            return Response.json(dict(
-                message="Sorry, {0} is not a container I "
-                    "recognize!".format(container_id),
-                reply_timestamp=datetime.datetime.now(),
-                success=False))
+        elif req.wz_req.args and "session_uuid" in req.wz_req.args:
+
+            sesh = pg.sessions.Session.verify_session_uuid(
+                self.cw.get_pgconn(),
+                req.wz_req.args["session_uuid"])
+
+            if sesh:
+                found_session = True
+
+        if found_session:
+            return handler_method(self, req)
 
         else:
-            return c
+
+            return Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message="Sorry, you need to log in first!",
+                needs_to_log_in=True,
+                success=False))
