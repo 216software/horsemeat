@@ -320,30 +320,27 @@ class Handler(object):
 
     @staticmethod
     @decorator.decorator
-    def get_session_from_cookie_or_json
+    def get_session_from_cookie_or_json(handler_method, self, req):
 
         if req.user:
             return handler_method(self, req)
 
         elif req.json and "session_uuid" not in req.json:
 
-			sesh = pg.sessions.Session.verify_session_uuid(
-				self.cw.get_pgconn(),
-				req.json["session_uuid"])
+            sesh = pg.sessions.Session.verify_session_uuid(
+                self.cw.get_pgconn(),
+                req.json["session_uuid"])
 
-			if sesh:
-				return handler_method(self, req)
+        if sesh:
+            return handler_method(self, req)
 
-		else:
+        else:
 
             return Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, you need to log in first!",
                 needs_to_log_in=True,
                 success=False))
-
-        else:
-            return handler_method(self, req)
 
     required_json_keys = []
 
