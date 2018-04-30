@@ -215,6 +215,28 @@ class Handler(object):
 
     def check_route_patterns(self, req):
 
+
+        """
+        Example usage::
+
+            class MyHandler(Handler):
+
+                route_patterns = list([
+                    "GET /my-handler/(?P<club_number>\d+)"
+                ])
+
+                route = Handler.check_route_patterns
+
+                def handle(self, req):
+
+                    return Response.json(dict(
+                        message="You asked about club {0}".format(
+                            req["club_number"]),
+                        success=True,
+                        reply_timestamp=datetime.datetime.now()))
+
+        """
+
         if not self.route_patterns:
             raise Exception("You need some route patterns!")
 
@@ -222,6 +244,8 @@ class Handler(object):
             match = req.line_one.test_for_match(rp)
 
             if match:
+
+                log.debug("match is {0!r}.".format(match))
 
                 d = match.groupdict()
                 for k in d:
