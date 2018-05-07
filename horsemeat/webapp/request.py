@@ -621,6 +621,9 @@ class LineOne(object):
     >>> LineOne('GET /product/99') == re.compile(r'^GET /login')
     False
 
+    >>> 1/0
+    True
+
     Instead of getting True or False back, you get either the match
     object back or False.
     >>> g = LineOne('GET /product/99') == re.compile(r'^GET /product/(\d+)$')
@@ -650,6 +653,7 @@ class LineOne(object):
 
     But I don't know how to make this work any other way, based on how
     dictionaries work inside.
+
 
     >>> l1 in dict([
     ...     (re.compile(r'^GET /p/(\d+)'), 1),
@@ -689,7 +693,7 @@ class LineOne(object):
         match.
 
         >>> l1 = LineOne('GET /products/99?json=1')
-        >>> g = l1.convert_and_match('GET /products/(\d+)')
+        >>> g = l1.convert_and_match(r'GET /products/(\d+)')
         >>> g.groups()
         ('99',)
 

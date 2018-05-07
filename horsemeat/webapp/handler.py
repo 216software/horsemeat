@@ -215,14 +215,13 @@ class Handler(object):
 
     def check_route_patterns(self, req):
 
-
         """
         Example usage::
 
             class MyHandler(Handler):
 
                 route_patterns = list([
-                    "GET /my-handler/(?P<club_number>\d+)"
+                    re.compile(r"GET /my-handler/(?P<club_number>\d+)")
                 ])
 
                 route = Handler.check_route_patterns
@@ -241,11 +240,13 @@ class Handler(object):
             raise Exception("You need some route patterns!")
 
         for rp in self.route_patterns:
+
+            if not hasattr(rp, "match"):
+                log.warning("This pattern {0!r} might not work right because it has no match method (i.e., it isn't a regex!).  You probably forgot to wrap it in re.compile...".format(rp))
+
             match = req.line_one.test_for_match(rp)
 
             if match:
-
-                log.debug("match is {0!r}.".format(match))
 
                 d = match.groupdict()
                 for k in d:
