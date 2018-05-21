@@ -624,9 +624,6 @@ class LineOne(object):
     >>> LineOne('GET /product/99') == re.compile(r'^GET /login')
     False
 
-    >>> 1/0
-    True
-
     Instead of getting True or False back, you get either the match
     object back or False.
     >>> g = LineOne('GET /product/99') == re.compile(r'^GET /product/(\d+)$')
