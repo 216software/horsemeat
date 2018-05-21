@@ -460,6 +460,9 @@ class Request(collections.MutableMapping):
         else:
             self['session'] = None
 
+    @session.setter
+    def session(self, sesh):
+        self["session"] = sesh
 
     @property
     def user(self):
