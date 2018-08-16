@@ -495,6 +495,10 @@ class ConfigWrapper(object):
     def webapp_port(self):
         return self.config_dictionary["app"]["webapp_port"]
 
+    @property
+    def num_webapp_workers(self):
+        return self.config_dictionary["app"]["num_webapp_workers"]
+
 
 class MissingConfig(KeyError):
 
