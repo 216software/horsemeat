@@ -15,8 +15,9 @@ log = logging.getLogger(__name__)
 
 class Response(object):
 
-    # Subclasses need to fill this in for themselves.
+    # Subclasses need to fill these in for themselves.
     configwrapper = None
+    fancyjsondumps = None
 
     def __init__(self, status, headers, body):
         self.status = status
@@ -395,7 +396,7 @@ class Response(object):
             response_status,
             [('Content-Type', 'application/json')],
 
-            cls.configwrapper.fancyjsondumps(data))
+            cls.fancyjsondumps(data))
 
         return json_response
 
