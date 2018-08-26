@@ -11,11 +11,12 @@ import sys
 
 import clepy
 
-from horsemeat import configwrapper
-
 log = logging.getLogger(__name__)
 
 class Response(object):
+
+    # Subclasses need to fill this in for themselves.
+    configwrapper = None
 
     def __init__(self, status, headers, body):
         self.status = status
@@ -159,10 +160,10 @@ class Response(object):
 
         else:
 
-            # Look up whatever config file has already been loaded
-            # (obviously you need to have already loaded a config file
-            # and set it as the default for this to work).
-            cw = configwrapper.ConfigWrapper.get_default()
+            # See how I'm using cls.configwrapper?  That is so that
+            # projects that subclass this Response can link to their
+            # very own configwrapper instance.
+            cw = cls.configwrapper.ConfigWrapper.get_default()
 
             location = '{0}://{1}{2}'.format(
                 cw.scheme,
@@ -395,7 +396,9 @@ class Response(object):
             [('Content-Type', 'application/json')],
 
             # I don't like getting fancyjsondumps like this because
-            # projects can't redefine how fancyjsondumps works!
+            # projects can't redefine how fancyjsondumps works, because
+            # this is the horsemeat configwrapper module, not the one in
+            # the project!
             configwrapper.fancyjsondumps(data))
 
         return json_response

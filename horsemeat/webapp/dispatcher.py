@@ -120,7 +120,6 @@ class Dispatcher(object):
                     resp.headers.append(('Access-Control-Allow-Credentials',
                         'true'))
 
-
             start_response(resp.status, resp.headers)
 
             if resp.status.startswith('4'):

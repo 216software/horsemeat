@@ -11,8 +11,6 @@ import clepy
 import decorator
 import jinja2
 
-from horsemeat.webapp.response import Response
-
 log = logging.getLogger(__name__)
 
 module_template_prefix = 'framework'
@@ -28,6 +26,8 @@ class Handler(object):
 
     route_strings = set()
 
+    # Subclasses must point this at something besides None!
+    Response = None
 
     def __init__(self, config_wrapper, dispatcher):
 
@@ -106,12 +106,12 @@ class Handler(object):
 
         # 401 error will be caught by jquery ajax error handler
         if req.is_AJAX:
-            resp = Response.plain("You have to log in first!")
+            resp = self.Response.plain("You have to log in first!")
 
             resp.status = '401 UNAUTHORIZED'
 
         if req.is_JSON:
-            resp = Response.json(dict(
+            resp = self.Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="You have to log in first!",
                 success=False))
@@ -120,7 +120,7 @@ class Handler(object):
 
 
         else:
-            resp = Response.relative_redirect('/login',
+            resp = self.Response.relative_redirect('/login',
                 'You have to log in first!')
 
             # Redirect back to the page the person is hitting right now.
@@ -155,7 +155,7 @@ class Handler(object):
 
         def f(req):
 
-            resp = Response.relative_redirect('/login', message)
+            resp = self.Response.relative_redirect('/login', message)
             resp.set_redirect_cookie(redirect_location)
             return resp
 
@@ -167,14 +167,14 @@ class Handler(object):
 
     def not_found_AJAX(self, req):
 
-        resp = Response.plain("404 NOT FOUND")
+        resp = self.Response.plain("404 NOT FOUND")
         resp.status = '404 NOT FOUND'
 
         return resp
 
     def not_found_JSON(self, req):
 
-        resp = Response.json(dict(
+        resp = self.Response.json(dict(
             reply_timestamp=datetime.datetime.now(),
             message="404 NOT FOUND '{0}'".format(req.line_one),
             success=False))
@@ -185,7 +185,7 @@ class Handler(object):
 
     def not_found_HTML(self, req):
 
-        resp = Response.tmpl(self.four_zero_four_template)
+        resp = self.Response.tmpl(self.four_zero_four_template)
 
         resp.status = '404 NOT FOUND'
 
@@ -228,7 +228,7 @@ class Handler(object):
 
                 def handle(self, req):
 
-                    return Response.json(dict(
+                    return self.Response.json(dict(
                         message="You asked about club {0}".format(
                             req["club_number"]),
                         success=True,
@@ -397,7 +397,7 @@ class Handler(object):
         if not req.is_JSON \
         or not req.json:
 
-            return Response.json(dict(
+            return self.Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, I need Content-Type application/json!",
                 success=False))
@@ -410,7 +410,7 @@ class Handler(object):
                 req.line_one,
                 missing_json_keys))
 
-            return Response.json(dict(
+            return self.Response.json(dict(
                 success=False,
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, you are missing keys: [{0}]!".format(
@@ -445,7 +445,7 @@ class Handler(object):
 
         if not self.check_user_group_in_required_groups(req):
 
-            return Response.json(dict(
+            return self.Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, you are are not in the group: [{0}]!".format(
                     ",".join(self.required_user_groups))))
@@ -497,7 +497,7 @@ class Handler(object):
 
         else:
 
-            return Response.json(dict(
+            return self.Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, you need to log in first!",
                 needs_to_log_in=True,
