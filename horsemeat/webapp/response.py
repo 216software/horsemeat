@@ -395,7 +395,7 @@ class Response(object):
             response_status,
             [('Content-Type', 'application/json')],
 
-            self.configwrapper.fancyjsondumps(data))
+            cls.configwrapper.fancyjsondumps(data))
 
         return json_response
 
@@ -463,7 +463,7 @@ class Response(object):
     @classmethod
     def tmpl(cls, template_name, **data):
 
-        cw = self.configwrapper.ConfigWrapper.get_default()
+        cw = cls.configwrapper.ConfigWrapper.get_default()
 
         j = cw.get_jinja2_environment()
 
