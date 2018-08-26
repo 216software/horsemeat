@@ -292,7 +292,7 @@ class Response(object):
         if self.redirect_cookie:
             self.remove_redirect_cookie_header()
 
-        cw = configwrapper.ConfigWrapper.get_default()
+        cw = self.configwrapper.ConfigWrapper.get_default()
 
         location = '{0}://{1}{2}'.format(
             cw.scheme,
@@ -395,11 +395,7 @@ class Response(object):
             response_status,
             [('Content-Type', 'application/json')],
 
-            # I don't like getting fancyjsondumps like this because
-            # projects can't redefine how fancyjsondumps works, because
-            # this is the horsemeat configwrapper module, not the one in
-            # the project!
-            configwrapper.fancyjsondumps(data))
+            self.configwrapper.fancyjsondumps(data))
 
         return json_response
 
@@ -467,7 +463,7 @@ class Response(object):
     @classmethod
     def tmpl(cls, template_name, **data):
 
-        cw = configwrapper.ConfigWrapper.get_default()
+        cw = self.configwrapper.ConfigWrapper.get_default()
 
         j = cw.get_jinja2_environment()
 
