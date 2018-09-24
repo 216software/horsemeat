@@ -42,6 +42,8 @@ class Dispatcher(object):
 
         raise NotImplementedError
 
+    # Subclasses need to fill me in!
+    response_class = None
 
     def __init__(self, jinja2_environment, pgconn, config_wrapper,
         enable_access_control=False):
@@ -153,9 +155,7 @@ class Dispatcher(object):
 
                 if req.is_JSON:
 
-
-
-                    resp = Response.json(dict(
+                    resp = self.response_class.json(dict(
                         reply_timestamp=datetime.datetime.now(),
                         message="Error encountered '{0}'".format(ex),
                         success=False))
