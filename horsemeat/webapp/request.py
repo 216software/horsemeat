@@ -8,6 +8,7 @@ import inspect
 import json
 import logging
 import re
+import sys
 import textwrap
 import urllib
 import urlparse
@@ -424,12 +425,21 @@ class Request(collections.MutableMapping):
             session_uuid = self.parsed_cookie['session_uuid'].value
             session_hexdigest = self.parsed_cookie['session_hexdigest'].value
 
-            calculated_hexdigest = hmac.HMAC(
-                bytes(
-                    str(self.config_wrapper.app_secret),
-                    "utf8"),
-                bytes(
-                    str(session_uuid), "utf8")).hexdigest()
+            # This is what to do for python 2
+            if sys.version_info.major < 3:
+
+                calculated_hexdigest = hmac.HMAC(
+                    self.config_wrapper.app_secret,
+                    session_uuid).hexdigest()
+
+            else:
+
+                calculated_hexdigest = hmac.HMAC(
+                    bytes(
+                        str(self.config_wrapper.app_secret),
+                        "utf8"),
+                    bytes(
+                        str(session_uuid), "utf8")).hexdigest()
 
             # Catch session IDs that have been tampered with.  There
             # really ought to be a way to do this in the SQL query,
