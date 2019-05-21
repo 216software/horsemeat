@@ -11,12 +11,9 @@ else
     PROJECTNAME=$1;
     PROJECTDIR=$2;
 
-    # TODO: Make it easy to pass in the path to where to get the
-    # frippery.zip file.  Maybe I could set up a post-receive hook on jan
-    # so that when it receives a new push, it generates a new archive
-    # file.
-
-    git archive HEAD --format=zip -o /tmp/frippery.zip --remote=ssh://matt@jan.216software.com/var/git-bare-repositories/frippery
+    # FYI, I wrote a post-receive hook on jan so that after push to jan,
+    # git rebuilds the frippery.zip file.
+    curl --silent -o /tmp/frippery.zip http://216software.com/frippery.zip
 
     unzip -q -d $PROJECTDIR /tmp/frippery.zip
     cd $PROJECTDIR
