@@ -85,7 +85,7 @@ class Request(collections.MutableMapping):
 
         if self.QUERY_STRING:
             parsed_qs = urlparse.parse_qs(
-                urllib.unquote(self.QUERY_STRING).decode(self.charset),
+                urllib.unquote(self.QUERY_STRING),
                 keep_blank_values=1)
 
         else:
