@@ -333,7 +333,7 @@ class Handler(object):
 
         if not req.user:
 
-            return Response.json(dict(
+            return self.Response.json(dict(
                 reply_timestamp=datetime.datetime.now(),
                 message="Sorry, you need to log in first!",
                 needs_to_log_in=True,
