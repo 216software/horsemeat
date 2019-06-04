@@ -406,7 +406,7 @@ class Handler(object):
 
             missing_json_keys = self.find_missing_json_keys(req)
 
-            log.warn("Request {0} didn't have these keys: {1}".format(
+            log.warning("Request {0} didn't have these keys: {1}".format(
                 req.line_one,
                 missing_json_keys))
 
