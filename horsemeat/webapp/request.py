@@ -3,6 +3,7 @@
 import cgi
 import collections
 import Cookie
+import hashlib
 import hmac
 import inspect
 import json
@@ -439,7 +440,8 @@ class Request(collections.MutableMapping):
                         str(self.config_wrapper.app_secret),
                         "utf8"),
                     bytes(
-                        str(session_uuid), "utf8")).hexdigest()
+                        str(session_uuid), "utf8"),
+                    digestmod=hashlib.md5).hexdigest()
 
             # Catch session IDs that have been tampered with.  There
             # really ought to be a way to do this in the SQL query,
