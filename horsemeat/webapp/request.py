@@ -3,11 +3,13 @@
 import cgi
 import collections
 import Cookie
+import hashlib
 import hmac
 import inspect
 import json
 import logging
 import re
+import sys
 import textwrap
 import urllib
 import urlparse
@@ -84,7 +86,7 @@ class Request(collections.MutableMapping):
 
         if self.QUERY_STRING:
             parsed_qs = urlparse.parse_qs(
-                urllib.unquote(self.QUERY_STRING).decode(self.charset),
+                urllib.unquote(self.QUERY_STRING),
                 keep_blank_values=1)
 
         else:
@@ -424,9 +426,22 @@ class Request(collections.MutableMapping):
             session_uuid = self.parsed_cookie['session_uuid'].value
             session_hexdigest = self.parsed_cookie['session_hexdigest'].value
 
-            calculated_hexdigest = hmac.HMAC(
-                self.config_wrapper.app_secret,
-                str(session_uuid)).hexdigest()
+            # This is what to do for python 2
+            if sys.version_info.major < 3:
+
+                calculated_hexdigest = hmac.HMAC(
+                    self.config_wrapper.app_secret,
+                    session_uuid).hexdigest()
+
+            else:
+
+                calculated_hexdigest = hmac.HMAC(
+                    bytes(
+                        str(self.config_wrapper.app_secret),
+                        "utf8"),
+                    bytes(
+                        str(session_uuid), "utf8"),
+                    digestmod=hashlib.md5).hexdigest()
 
             # Catch session IDs that have been tampered with.  There
             # really ought to be a way to do this in the SQL query,
@@ -457,6 +472,9 @@ class Request(collections.MutableMapping):
         else:
             self['session'] = None
 
+    @session.setter
+    def session(self, sesh):
+        self["session"] = sesh
 
     @property
     def user(self):
@@ -648,6 +666,7 @@ class LineOne(object):
     But I don't know how to make this work any other way, based on how
     dictionaries work inside.
 
+
     >>> l1 in dict([
     ...     (re.compile(r'^GET /p/(\d+)'), 1),
     ...     (re.compile(r'GET /products/(\d+)'), 2),
@@ -686,7 +705,7 @@ class LineOne(object):
         match.
 
         >>> l1 = LineOne('GET /products/99?json=1')
-        >>> g = l1.convert_and_match('GET /products/(\d+)')
+        >>> g = l1.convert_and_match(r'GET /products/(\d+)')
         >>> g.groups()
         ('99',)
 

@@ -59,7 +59,6 @@ class ConfigWrapper(object):
 
         self.postgresql_connection = None
         self.jinja2_environment = None
-        self.smtp_connection = None
 
     @classmethod
     def from_yaml_file_name(cls, filename):
@@ -208,7 +207,7 @@ class ConfigWrapper(object):
 
         return pgconn
 
-    # Make aliases because Matt can't remember stuff good.
+    # Make aliases because Matt can't remember stuff well.
     create_postgresql_connection = make_database_connection
     make_postgresql_connection = make_database_connection
 
@@ -455,6 +454,10 @@ class ConfigWrapper(object):
     def production_mode(self):
         return not self.dev_mode
 
+    @property
+    def enable_access_control(self):
+        return self.config_dictionary['app'].get('access_control', False)
+
     def build_webapp(self):
 
         self.set_as_default()
@@ -466,7 +469,8 @@ class ConfigWrapper(object):
         j = self.get_jinja2_environment()
         pgconn = self.get_postgresql_connection()
 
-        return self.dispatcher_class(j, pgconn, self)
+        return self.dispatcher_class(j, pgconn, self,
+            self.enable_access_control)
 
     def run_production_mode_stuff(self):
 
@@ -490,6 +494,10 @@ class ConfigWrapper(object):
     @property
     def webapp_port(self):
         return self.config_dictionary["app"]["webapp_port"]
+
+    @property
+    def num_webapp_workers(self):
+        return self.config_dictionary["app"]["num_webapp_workers"]
 
 
 class MissingConfig(KeyError):

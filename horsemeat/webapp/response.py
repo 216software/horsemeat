@@ -7,15 +7,17 @@ import json
 import logging
 import pprint
 import urllib
+import sys
 
 import clepy
-
-from horsemeat import configwrapper
 
 log = logging.getLogger(__name__)
 
 class Response(object):
 
+    # Subclasses need to fill these in for themselves.
+    configwrapper = None
+    fancyjsondumps = None
 
     def __init__(self, status, headers, body):
         self.status = status
@@ -26,15 +28,50 @@ class Response(object):
     def body(self):
         return self._body
 
-    @body.setter
-    def body(self, val):
+    def body_python2(self, val):
+
+        """
+        This is the body setter for python 2.
+
+        If the body isn't wrapped in a list, I'll wrap it in a list, but
+        only if the data is not a file wrapper!
+        """
+
+        from gunicorn.http.wsgi import FileWrapper
+
+        if not isinstance(val, FileWrapper):
+            self._body = clepy.listmofize(val)
+        else:
+            self._body = val
+
+    def body_python3(self, val):
 
         """
         If the body isn't wrapped in a list, I'll wrap it in a list.
+
+        (Only if it's not a file wrapper)
         """
 
-        self._body = clepy.listmofize(val)
+        from gunicorn.http.wsgi import FileWrapper
 
+        if isinstance(val, FileWrapper):
+            self._body = val
+
+        # Remember that in python 3, unicode stuff is just a string.
+        elif isinstance(val, str):
+            self._body = clepy.listmofize(bytes(val, "utf-8"))
+
+        else:
+            self._body = clepy.listmofize(val)
+
+    @body.setter
+    def body(self, val):
+
+        if sys.version_info.major == 3:
+            return self.body_python3(val)
+
+        else:
+            return self.body_python2(val)
 
     def add_nocache_header(self):
 
@@ -124,10 +161,10 @@ class Response(object):
 
         else:
 
-            # Look up whatever config file has already been loaded
-            # (obviously you need to have already loaded a config file
-            # and set it as the default for this to work).
-            cw = configwrapper.ConfigWrapper.get_default()
+            # See how I'm using cls.configwrapper?  That is so that
+            # projects that subclass this Response can link to their
+            # very own configwrapper instance.
+            cw = cls.configwrapper.ConfigWrapper.get_default()
 
             location = '{0}://{1}{2}'.format(
                 cw.scheme,
@@ -256,7 +293,7 @@ class Response(object):
         if self.redirect_cookie:
             self.remove_redirect_cookie_header()
 
-        cw = configwrapper.ConfigWrapper.get_default()
+        cw = self.configwrapper.ConfigWrapper.get_default()
 
         location = '{0}://{1}{2}'.format(
             cw.scheme,
@@ -350,6 +387,8 @@ class Response(object):
             response_status = '400 Bad Request'
         elif status == '404':
             response_status = '400 Not Found'
+        elif status == '500':
+            response_status = '500 Error'
         else:
             response_status = '200 OK'
 
@@ -357,9 +396,7 @@ class Response(object):
             response_status,
             [('Content-Type', 'application/json')],
 
-            # I don't like getting fancyjsondumps like this because
-            # projects can't redefine how fancyjsondumps works!
-            configwrapper.fancyjsondumps(data))
+            cls.fancyjsondumps(data))
 
         return json_response
 
@@ -379,11 +416,21 @@ class Response(object):
 
         if hmac_secret:
 
-            self.headers.append((
-                'Set-Cookie',
-                'news-message-hexdigest={0};'.format(hmac.HMAC(
-                    hmac_secret,
-                    quoted_messagetext).hexdigest())))
+            if sys.version_info.major < 3:
+
+                self.headers.append((
+                    'Set-Cookie',
+                    'news-message-hexdigest={0};'.format(hmac.HMAC(
+                        hmac_secret,
+                        str(quoted_messagetext)).hexdigest())))
+
+            else:
+
+                self.headers.append((
+                    'Set-Cookie',
+                    'news-message-hexdigest={0};'.format(hmac.HMAC(
+                        bytes(str(hmac_secret), "utf8"),
+                        bytes(str(quoted_messagetext), "utf8")).hexdigest())))
 
         return self
 
@@ -417,7 +464,7 @@ class Response(object):
     @classmethod
     def tmpl(cls, template_name, **data):
 
-        cw = configwrapper.ConfigWrapper.get_default()
+        cw = cls.configwrapper.ConfigWrapper.get_default()
 
         j = cw.get_jinja2_environment()
 
@@ -428,13 +475,42 @@ class Response(object):
         return cls.html(x.encode('utf8'))
 
 
-    def set_session_cookie(self, session_uuid, secret):
+    def set_session_cookie(self, session_uuid, secret,
+        expires_date=None, path='/'):
+
+        """
+
+        Sets two cookies -- session_uuid and session_hexdigest
+
+        if expires is not none, then set the cookie to expire based
+        on variable
+
+        """
 
         c = Cookie.SimpleCookie()
+        c1 = Cookie.SimpleCookie()
         c['session_uuid'] = session_uuid
-        c['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+        c['session_uuid']['path'] = path
+
+        if sys.version_info.major < 3:
+            c1['session_hexdigest'] = hmac.HMAC(secret, str(session_uuid)).hexdigest()
+
+        else:
+            c1['session_hexdigest'] = hmac.HMAC(
+                bytes(secret, "utf8"),
+                bytes(str(session_uuid), "utf8"),
+                digestmod="md5").hexdigest()
+
+        c1['session_hexdigest']['path'] = path
+
+
+        if expires_date:
+            c['session_uuid']['expires'] = expires_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            c1['session_hexdigest']['expires'] = \
+                expires_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         self.headers.append(('Set-Cookie', c.output(header='').strip()))
+        self.headers.append(('Set-Cookie', c1.output(header='').strip()))
 
     @classmethod
     def csv_file(cls, filelike, filename, FileWrap):

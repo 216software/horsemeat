@@ -19,8 +19,8 @@ from horsemeat.webapp.response import Response
 
 log = logging.getLogger(__name__)
 
-# Tell python to always SHOW the deprecation warnings.
-warnings.filterwarnings('always', category=DeprecationWarning)
+# Only show deprecation warnings once.
+warnings.filterwarnings('once', category=DeprecationWarning)
 
 class Dispatcher(object):
 
@@ -42,12 +42,17 @@ class Dispatcher(object):
 
         raise NotImplementedError
 
+    # Subclasses need to fill me in!
+    response_class = None
 
-    def __init__(self, jinja2_environment, pgconn, config_wrapper):
+    def __init__(self, jinja2_environment, pgconn, config_wrapper,
+        enable_access_control=False):
 
         self.jinja2_environment = jinja2_environment
         self.pgconn = pgconn
         self.config_wrapper = config_wrapper
+
+        self.enable_access_control = enable_access_control
 
         self.handlers = []
         self.make_handlers()
@@ -80,8 +85,10 @@ class Dispatcher(object):
             self.jinja2_environment.globals['request'] = req
             self.jinja2_environment.globals['req'] = req
 
-            log.info('Got request {0} {1}'.format(
-                req.REQUEST_METHOD, req.path_and_qs))
+            log.info('Got request {0} {1} from {2}'.format(
+                req.REQUEST_METHOD,
+                req.path_and_qs,
+                req.client_IP_address))
 
             handle_function = self.dispatch(req)
 
@@ -89,14 +96,6 @@ class Dispatcher(object):
 
             if not isinstance(resp, Response):
                 raise Exception("Handler didn't return a response object!")
-
-            # Maybe if the route method returned self, rather than
-            # self.handle, at this point, we could do a test like
-            #
-            #     if callable(getattr(h, 'after_handle', None))
-            #
-            # and then all this stuff could be defined on the
-            # handler.Handler class rather than in here.
 
             # TODO: make this happen as an automatic side effect of
             # reading the data, so that there is absolutely no risk at
@@ -112,12 +111,30 @@ class Dispatcher(object):
 
             self.pgconn.commit()
 
+            if self.enable_access_control:
+
+                # Don't add it redundantly!
+                if 'Access-Control-Allow-Origin' not in [key for (key, val) in resp.headers]:
+
+                    resp.headers.append(('Access-Control-Allow-Origin',
+                        dict(req.wz_req.headers).get('Origin', '*')))
+
+                    resp.headers.append(('Access-Control-Allow-Credentials',
+                        'true'))
+
             start_response(resp.status, resp.headers)
 
-            log.info('Replying with status %s.\n' % resp.status)
+            if resp.status.startswith('4'):
+                log.warning('Replying with status %s.\n' % resp.status)
 
-            if resp.status.startswith('30'):
+            elif resp.status.startswith('5'):
+                log.critical('Replying with status %s.\n' % resp.status)
+
+            elif resp.status.startswith('30'):
                 log.info('Redirecting to {0}.'.format(resp.headers))
+
+            else:
+                log.info('Replying with status %s.\n' % resp.status)
 
             return resp.body
 
@@ -136,14 +153,38 @@ class Dispatcher(object):
 
                 log.critical(environ)
 
-                start_response(
-                    '500 ERROR',
-                    [('Content-Type', 'text/html; charset=utf-8')],
-                    sys.exc_info())
+                if req.is_JSON:
 
-                s = self.error_page.render()
+                    resp = self.response_class.json(dict(
+                        reply_timestamp=datetime.datetime.now(),
+                        message="Error encountered '{0}'".format(ex),
+                        success=False))
 
-                return [s.encode('utf8')]
+                    resp.status = '500 ERROR'
+
+                    if self.enable_access_control:
+                        resp.headers.append(('Access-Control-Allow-Origin',
+                            dict(req.wz_req.headers).get('Origin', '*')))
+
+                        resp.headers.append(('Access-Control-Allow-Credentials',
+                            'true'))
+
+
+                    start_response(resp.status, resp.headers)
+
+                    log.info('Replying with status %s.\n' % resp.status)
+
+                    return resp.body
+
+                else:
+                    start_response(
+                        '500 ERROR',
+                        [('Content-Type', 'text/html; charset=utf-8')],
+                        sys.exc_info())
+
+                    s = self.error_page.render()
+
+                    return [s.encode('utf8')]
 
 
     def dispatch(self, request):

@@ -4,14 +4,20 @@ import os
 import sys
 
 from setuptools import find_packages, setup
-import pip
+
+try:
+    from pip.req import parse_requirements
+except ImportError:
+    # The req module has been moved to pip._internal in the 10
+    # release.
+    from pip._internal.req import parse_requirements
 
 # Read __version__ from version.py
 with open(os.path.join(os.getcwd(), "horsemeat", "version.py")) as f:
     exec(f.read())
 
 requirements = [str(req.req)
-    for req in pip.req.parse_requirements(
+    for req in parse_requirements(
         "requirements.txt",
         session="setup.py")]
 

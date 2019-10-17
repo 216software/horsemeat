@@ -8,3 +8,4 @@
 /wheelhouse
 /.tox
 /build
+/.eggs/
