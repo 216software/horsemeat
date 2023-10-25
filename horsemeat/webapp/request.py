@@ -20,7 +20,7 @@ from werkzeug.wrappers import Request as WerkzeugRequest
 
 log = logging.getLogger(__name__)
 
-class Request(collections.abc.MutableMapping):
+class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else collections.MutableMapping):
 
     """
     Wraps up the environ dictionary in an object with lots of cute
