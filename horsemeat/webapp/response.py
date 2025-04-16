@@ -416,8 +416,7 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
-
-            cls.fancyjsondumps(data))
+            cls.fancyjsondumps(data).encode('utf8'))
 
         return json_response
 
