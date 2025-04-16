@@ -15,7 +15,7 @@ import traceback
 import uuid
 import warnings
 
-import clepy
+# import clepy
 import jinja2
 import pkg_resources
 import psycopg2, psycopg2.extras
@@ -327,7 +327,7 @@ class ConfigWrapper(object):
 
         # Add a bunch of stuff to the template namespace.
         j.globals['ceil'] = math.ceil
-        j.globals['clepy'] = clepy
+        # j.globals['clepy'] = clepy
         j.globals['datetime'] = datetime
         j.globals['dir'] = dir
         j.globals['enumerate'] = enumerate
