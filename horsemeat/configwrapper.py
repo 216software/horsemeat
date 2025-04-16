@@ -497,7 +497,11 @@ class ConfigWrapper(object):
 
     @property
     def num_webapp_workers(self):
-        return self.config_dictionary["app"]["num_webapp_workers"]
+        return self.config_dictionary["app"].get("num_webapp_workers", 1)
+
+    @property
+    def webapp_timeout_secs(self):
+        return self.config_dictionary["app"].get("webapp_timeout", 30)
 
 
 class MissingConfig(KeyError):
