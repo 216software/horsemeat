@@ -76,7 +76,7 @@ class Request(collections.MutableMapping):
         >>> req.parsed_QS['flavor'][0] == u'Jalapeño' # doctest: +SKIP
         True
 
-        >>> print req.parsed_QS['flavor'][0] # doctest: +SKIP
+        >>> print(req.parsed_QS['flavor'][0]) # doctest: +SKIP
         Jalapeño
 
         """
@@ -214,7 +214,7 @@ class Request(collections.MutableMapping):
         >>> req.parsed_body['flavor'][0] == u'Jalape\xf1o' # doctest: +SKIP
         True
 
-        >>> print req.parsed_body['flavor'][0] # doctest: +SKIP
+        >>> print(req.parsed_body['flavor'][0]) # doctest: +SKIP
         Jalapeño
 
         >>> 'novalue' in req.parsed_body # doctest: +SKIP
