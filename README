@@ -1,3 +1,6 @@
 This is a web framework for the damned.  The mad.
 
+$ python setup.py dist
+$ twine upload dist/horsemeat...
+
 

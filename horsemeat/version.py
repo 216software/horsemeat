@@ -22,4 +22,4 @@ hasn't been installed yet.
 
 """
 
-__version__ = '2.22.2'
+__version__ = '2.22.3'

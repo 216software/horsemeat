@@ -2,7 +2,7 @@
 
 import cgi
 import collections
-import Cookie
+import http.cookies
 import hashlib
 import hmac
 import inspect
@@ -99,7 +99,7 @@ class Request(collections.MutableMapping):
     def parsed_cookie(self):
 
         if self.HTTP_COOKIE:
-            c = Cookie.SimpleCookie()
+            c = http.cookies.SimpleCookie()
             c.load(self.HTTP_COOKIE)
             return c
 
