@@ -12,7 +12,7 @@ import re
 import sys
 import textwrap
 import urllib
-import urlparse
+import urllib.parse
 import warnings
 import wsgiref.util
 
@@ -85,7 +85,7 @@ class Request(collections.MutableMapping):
             return self['parsed_QS']
 
         if self.QUERY_STRING:
-            parsed_qs = urlparse.parse_qs(
+            parsed_qs = urllib.parse.parse_qs(
                 urllib.unquote(self.QUERY_STRING),
                 keep_blank_values=1)
 
@@ -228,7 +228,7 @@ class Request(collections.MutableMapping):
         if self.body:
 
             try:
-                self['horsemeat.parsed_body'] = urlparse.parse_qs(
+                self['horsemeat.parsed_body'] = urllib.parse.parse_qs(
                     urllib.unquote(self.body).decode(self.charset),
                     keep_blank_values=1)
 
