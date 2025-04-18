@@ -262,7 +262,7 @@ class Response(object):
         else:
             s = body
 
-        if isinstance(s, unicode):
+        if isinstance(s, str):
             encoded_s = s.encode('utf8')
 
         else:

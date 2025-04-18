@@ -86,7 +86,7 @@ class Request(collections.MutableMapping):
 
         if self.QUERY_STRING:
             parsed_qs = urllib.parse.parse_qs(
-                urllib.unquote(self.QUERY_STRING),
+                urllib.parse.unquote(self.QUERY_STRING),
                 keep_blank_values=1)
 
         else:
@@ -229,7 +229,7 @@ class Request(collections.MutableMapping):
 
             try:
                 self['horsemeat.parsed_body'] = urllib.parse.parse_qs(
-                    urllib.unquote(self.body).decode(self.charset),
+                    urllib.parse.unquote(self.body).decode(self.charset),
                     keep_blank_values=1)
 
             except UnicodeDecodeError as e:
@@ -306,7 +306,7 @@ class Request(collections.MutableMapping):
 
         if self.parsed_cookie and 'news-message' in self.parsed_cookie:
             quoted_message = self.parsed_cookie['news-message'].value
-            message = urllib.unquote_plus(quoted_message)
+            message = urllib.parse.unquote_plus(quoted_message)
 
         else:
             message = None
