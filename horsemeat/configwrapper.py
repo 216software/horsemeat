@@ -257,6 +257,10 @@ class ConfigWrapper(object):
 
     def set_as_default(self):
 
+        """
+        This could also be thought of as setting a singleton.
+        """
+
         ConfigWrapper.default_instance = self
         return self
 
