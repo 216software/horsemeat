@@ -1,6 +1,6 @@
 # vim: set expandtab ts=4 sw=4 filetype=python:
 
-import urlparse
+import urllib.parse
 
 class BogusRequest(object):
 
@@ -44,7 +44,7 @@ class BogusRequest(object):
 
         """
 
-        parts = urlparse.urlparse(url)
+        parts = urllib.parse.urlparse(url)
 
         return cls('GET', parts.netloc, parts.path, parts.query)
 
@@ -57,7 +57,7 @@ class BogusRequest(object):
     def parsed_QS(self):
 
         if self.QUERY_STRING:
-            return urlparse.parse_qs(self.QUERY_STRING)
+            return urllib.parse.parse_qs(self.QUERY_STRING)
 
         else:
             return {}

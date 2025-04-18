@@ -1,1 +1,9 @@
 This is a web framework for the damned.  The mad.
+
+Release an updated version like this:
+
+$ vi horsemeat/version.py # bump up the version
+
+$ python setup.py sdist
+$ twine upload dist/horsemeat.2.22.5.tar.gz
+

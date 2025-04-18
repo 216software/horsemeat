@@ -15,7 +15,7 @@ import traceback
 import uuid
 import warnings
 
-import clepy
+# import clepy
 import jinja2
 import pkg_resources
 import psycopg2, psycopg2.extras
@@ -257,6 +257,10 @@ class ConfigWrapper(object):
 
     def set_as_default(self):
 
+        """
+        This could also be thought of as setting a singleton.
+        """
+
         ConfigWrapper.default_instance = self
         return self
 
@@ -327,7 +331,7 @@ class ConfigWrapper(object):
 
         # Add a bunch of stuff to the template namespace.
         j.globals['ceil'] = math.ceil
-        j.globals['clepy'] = clepy
+        # j.globals['clepy'] = clepy
         j.globals['datetime'] = datetime
         j.globals['dir'] = dir
         j.globals['enumerate'] = enumerate
@@ -483,7 +487,7 @@ class ConfigWrapper(object):
     @abc.abstractproperty
     def dispatcher_class(self):
 
-        print "you have to define this in the subclass!"
+        print("you have to define this in the subclass!")
 
         raise NotImplementedError
 
@@ -497,7 +501,11 @@ class ConfigWrapper(object):
 
     @property
     def num_webapp_workers(self):
-        return self.config_dictionary["app"]["num_webapp_workers"]
+        return self.config_dictionary["app"].get("num_webapp_workers", 1)
+
+    @property
+    def webapp_timeout_secs(self):
+        return self.config_dictionary["app"].get("webapp_timeout", 30)
 
 
 class MissingConfig(KeyError):

@@ -84,7 +84,7 @@ class Scrubber(object):
         >>> try:
         ...     Scrubber.validate_email_address('a@b')
         ... except Exception as ex:
-        ...     print "bad email!"
+        ...     print("bad email!")
         bad email!
 
         """

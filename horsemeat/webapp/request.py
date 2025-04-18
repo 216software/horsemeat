@@ -2,7 +2,7 @@
 
 import cgi
 import collections
-import Cookie
+import http.cookies
 import hashlib
 import hmac
 import inspect
@@ -12,7 +12,7 @@ import re
 import sys
 import textwrap
 import urllib
-import urlparse
+import urllib.parse
 import warnings
 import wsgiref.util
 
@@ -76,7 +76,7 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
         >>> req.parsed_QS['flavor'][0] == u'Jalapeño' # doctest: +SKIP
         True
 
-        >>> print req.parsed_QS['flavor'][0] # doctest: +SKIP
+        >>> print(req.parsed_QS['flavor'][0]) # doctest: +SKIP
         Jalapeño
 
         """
@@ -85,8 +85,8 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
             return self['parsed_QS']
 
         if self.QUERY_STRING:
-            parsed_qs = urlparse.parse_qs(
-                urllib.unquote(self.QUERY_STRING),
+            parsed_qs = urllib.parse.parse_qs(
+                urllib.parse.unquote(self.QUERY_STRING),
                 keep_blank_values=1)
 
         else:
@@ -99,7 +99,7 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
     def parsed_cookie(self):
 
         if self.HTTP_COOKIE:
-            c = Cookie.SimpleCookie()
+            c = http.cookies.SimpleCookie()
             c.load(self.HTTP_COOKIE)
             return c
 
@@ -214,7 +214,7 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
         >>> req.parsed_body['flavor'][0] == u'Jalape\xf1o' # doctest: +SKIP
         True
 
-        >>> print req.parsed_body['flavor'][0] # doctest: +SKIP
+        >>> print(req.parsed_body['flavor'][0]) # doctest: +SKIP
         Jalapeño
 
         >>> 'novalue' in req.parsed_body # doctest: +SKIP
@@ -228,8 +228,8 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
         if self.body:
 
             try:
-                self['horsemeat.parsed_body'] = urlparse.parse_qs(
-                    urllib.unquote(self.body).decode(self.charset),
+                self['horsemeat.parsed_body'] = urllib.parse.parse_qs(
+                    urllib.parse.unquote(self.body).decode(self.charset),
                     keep_blank_values=1)
 
             except UnicodeDecodeError as e:
@@ -306,7 +306,7 @@ class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else 
 
         if self.parsed_cookie and 'news-message' in self.parsed_cookie:
             quoted_message = self.parsed_cookie['news-message'].value
-            message = urllib.unquote_plus(quoted_message)
+            message = urllib.parse.unquote_plus(quoted_message)
 
         else:
             message = None

@@ -1,6 +1,6 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
 
-import Cookie
+import http.cookies
 import datetime
 import hmac
 import json
@@ -9,7 +9,28 @@ import pprint
 import urllib
 import sys
 
-import clepy
+def listmofize(x):
+
+    """
+    Return x inside a list if it isn't already a list or tuple.
+    Otherwise, return x.
+
+    >>> listmofize('abc')
+    ['abc']
+
+    >>> listmofize(['abc', 'def'])
+    ['abc', 'def']
+
+    >>> listmofize((1,2))
+    (1, 2)
+
+    listmofize used to live in the clepy package, but the use2to3 option
+    in setup.py no longer works, and I'm not gonna rewrite all that for
+    this one function.
+    """
+
+    if not isinstance(x, (list, tuple)): return [x]
+    else: return x
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +61,7 @@ class Response(object):
         from gunicorn.http.wsgi import FileWrapper
 
         if not isinstance(val, FileWrapper):
-            self._body = clepy.listmofize(val)
+            self._body = listmofize(val)
         else:
             self._body = val
 
@@ -59,10 +80,10 @@ class Response(object):
 
         # Remember that in python 3, unicode stuff is just a string.
         elif isinstance(val, str):
-            self._body = clepy.listmofize(bytes(val, "utf-8"))
+            self._body = listmofize(bytes(val, "utf-8"))
 
         else:
-            self._body = clepy.listmofize(val)
+            self._body = listmofize(val)
 
     @body.setter
     def body(self, val):
@@ -241,7 +262,7 @@ class Response(object):
         else:
             s = body
 
-        if isinstance(s, unicode):
+        if isinstance(s, str):
             encoded_s = s.encode('utf8')
 
         else:
@@ -395,8 +416,7 @@ class Response(object):
         json_response = cls(
             response_status,
             [('Content-Type', 'application/json')],
-
-            cls.fancyjsondumps(data))
+            cls.fancyjsondumps(data).encode('utf8'))
 
         return json_response
 

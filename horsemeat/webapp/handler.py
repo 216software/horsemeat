@@ -7,7 +7,6 @@ import sys
 import textwrap
 import warnings
 
-import clepy
 import decorator
 import jinja2
 
