@@ -424,7 +424,7 @@ class Response(object):
 
         quoted_messagetext = urllib.quote_plus(messagetext)
 
-        c = Cookie.SimpleCookie()
+        c = http.cookies.SimpleCookie()
 
         c['news-message'] = quoted_messagetext
         c['news-message']['httponly'] = True
@@ -507,8 +507,8 @@ class Response(object):
 
         """
 
-        c = Cookie.SimpleCookie()
-        c1 = Cookie.SimpleCookie()
+        c = http.cookies.SimpleCookie()
+        c1 = http.cookies.SimpleCookie()
         c['session_uuid'] = session_uuid
         c['session_uuid']['path'] = path
 

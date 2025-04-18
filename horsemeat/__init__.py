@@ -15,9 +15,6 @@ class HorsemeatJSONEncoder(json.JSONEncoder):
         # TODO: when something can not be JSON-encoded, just return a
         # message like "can not JSON-encode {0}".
 
-        import pdb
-        pdb.set_trace()
-
         import psycopg2.extras
 
         # Any object that wants to be encoded into JSON should make a
