@@ -1,7 +1,7 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
 
 import cgi
-import collections
+import collections.abc
 import http.cookies
 import hashlib
 import hmac
@@ -20,7 +20,7 @@ from werkzeug.wrappers import Request as WerkzeugRequest
 
 log = logging.getLogger(__name__)
 
-class Request(collections.abc.MutableMapping if sys.version_info >= (3,10) else collections.MutableMapping):
+class Request(collections.abc.MutableMapping):
 
     """
     Wraps up the environ dictionary in an object with lots of cute
