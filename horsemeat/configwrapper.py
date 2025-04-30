@@ -193,8 +193,7 @@ class ConfigWrapper(object):
             user=self.database_user,
             password=self.database_password)
 
-        log.info("Just made postgresql connection {0}.".format(
-            pgconn))
+        log.info(f"Just made postgresql connection {pgconn} (composite types registered: {register_composite_types}.")
 
         psycopg2.extras.register_uuid()
         psycopg2.extras.register_hstore(pgconn, globally=True)

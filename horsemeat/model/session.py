@@ -177,7 +177,51 @@ class Session(object):
         self.inserted = inserted
         self.updated = updated
 
+    def expire(self, pgconn):
+
+        """
+        This sets the expires field to right now, which means they are
+        now logged out of this session.
+        """
+
+        cursor = pgconn.cursor()
+
+        cursor.execute(textwrap.dedent("""
+            update webapp_sessions
+            set expires = current_timestamp
+            where session_uuid = (%(session_uuid)s)
+            and expires > current_timestamp
+            returning expires
+            """), {'session_uuid': self.session_uuid})
+
+        if cursor.rowcount:
+            return cursor.fetchone().expires
+
+    @classmethod
+    def expire_all_sessions_for_user(cls, pgconn, person_uuid):
+
+        cursor = pgconn.cursor()
+
+        cursor.execute(textwrap.dedent("""
+            update webapp_sessions
+            set expires = current_timestamp
+            where person_uuid = (%(person_uuid)s)
+            and expires > current_timestamp
+            returning (webapp_sessions.*)::webapp_sessions as expired_session
+            """), {'person_uuid': self.person_uuid})
+
+        if cursor.rowcount:
+            return cursor
+
+
     def maybe_update_session_expires_time(self, pgconn):
+
+        """
+        This resets the expires field to the default, which is now() +
+        interval '1 hour'.
+
+        Use this to keep somebody logged in for another hour.
+        """
 
         cursor = pgconn.cursor()
 
@@ -187,7 +231,7 @@ class Session(object):
             where session_uuid = (%(session_uuid)s)
             and expires > current_timestamp
             returning expires
-        """), {'session_uuid': self.session_uuid})
+            """), {'session_uuid': self.session_uuid})
 
         if cursor.rowcount:
             return cursor.fetchone().expires
