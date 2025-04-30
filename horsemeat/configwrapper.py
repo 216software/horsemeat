@@ -85,6 +85,8 @@ class ConfigWrapper(object):
                 yaml.safe_load(stream),
                 yaml_file_name=filename)
 
+            stream.close()
+
             return self
 
     @classmethod
