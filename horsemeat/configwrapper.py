@@ -19,6 +19,7 @@ import warnings
 import jinja2
 import pkg_resources
 import psycopg2, psycopg2.extras
+import psycopg
 import yaml
 
 from horsemeat import fancyjsondumps
@@ -185,7 +186,39 @@ class ConfigWrapper(object):
     def database_password(self):
         return self.config_dictionary['postgresql'].get('password')
 
-    def make_database_connection(self, register_composite_types=True):
+    def make_psycopg_database_connection(self, register_composite_types=True):
+
+        """
+        This is NOT psycopg2, but psycopg3, which goes by psycopg.
+        """
+
+        if self.config_dictionary["postgresql"].get("psycopg_version") != "psycopg":
+
+            raise Exception("Add a 'psycopg_version' key under postgresql in your yaml file and set it to 'psycopg' to use this!")
+
+        else:
+
+            pgconn = psycopg.connect(
+                row_factory=psycopg.rows.namedtuple_row,
+                port=self.database_port,
+                dbname=self.database_name,
+                host=self.database_host,
+                user=self.database_user,
+                password=self.database_password)
+
+            log.info(f"Just made postgresql connection {pgconn} (composite types registered: {register_composite_types}.")
+
+            # psycopg2.extras.register_uuid()
+            # psycopg2.extras.register_hstore(pgconn, globally=True)
+            # psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
+            # psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
+
+            if register_composite_types:
+                self.register_psycopg_composite_types(pgconn)
+
+            return pgconn
+
+    def make_psycopg2_database_connection(self, register_composite_types=True):
 
         pgconn = psycopg2.connect(
             connection_factory=psycopg2.extras.NamedTupleConnection,
@@ -204,15 +237,37 @@ class ConfigWrapper(object):
         psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
         if register_composite_types:
-            self.register_composite_types(pgconn)
+            self.register_psycopg2_composite_types(pgconn)
 
         return pgconn
+
+    def make_database_connection(self, register_composite_types=True):
+
+        """
+        Defaults to psycopg2, not the fancy newer psycopg, which is
+        really psycopg3.
+
+        Add a config entry to use the fancy one.
+        """
+
+        if self.config_dictionary["postgresql"].get("psycopg_version") != "psycopg":
+            return self.make_psycopg2_database_connection(register_composite_types=register_composite_types)
+
+        else:
+            return self.make_psycopg_database_connection(register_composite_types=register_composite_types)
 
     # Make aliases because Matt can't remember stuff well.
     create_postgresql_connection = make_database_connection
     make_postgresql_connection = make_database_connection
 
-    def register_composite_types(self, pgconn):
+    def register_psycopg_composite_types(self, pgconn):
+
+        """
+        Subclasses can define this if they want to.
+        """
+        pass
+
+    def register_psycopg2_composite_types(self, pgconn):
 
         """
         Subclasses can define this if they want to.
