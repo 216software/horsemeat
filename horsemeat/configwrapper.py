@@ -3,6 +3,7 @@
 import abc
 import contextlib
 import datetime
+import importlib
 import json
 import logging
 import logging.config
@@ -17,7 +18,7 @@ import warnings
 
 # import clepy
 import jinja2
-import pkg_resources
+# import pkg_resources
 import psycopg2, psycopg2.extras
 import psycopg
 import yaml
@@ -78,9 +79,11 @@ class ConfigWrapper(object):
 
         else:
 
-            stream = pkg_resources.resource_stream(
-                cls.configmodule,
-                filename)
+            stream = importlib.resources.files(cls.configmodule).joinpath(filename).open()
+
+            # stream = pkg_resources.resource_stream(
+            #     cls.configmodule,
+            #     filename)
 
             self = cls(
                 yaml.safe_load(stream),
@@ -106,9 +109,11 @@ class ConfigWrapper(object):
 
             return self
 
-        elif pkg_resources.resource_exists(
-            cls.configmodule,
-            path_to_file):
+        # elif pkg_resources.resource_exists(
+            # cls.configmodule,
+            # path_to_file):
+
+        elif importlib.resources.files(cls.configmodule).joinpath(path_to_file).exists():
 
             return cls.from_yaml_file_name(path_to_file)
 
@@ -250,7 +255,10 @@ class ConfigWrapper(object):
         Add a config entry to use the fancy one.
         """
 
+        # Pretty quick, move to psycopg from psycopg2 but this is here
+        # until I get tests passing.
         if self.config_dictionary["postgresql"].get("psycopg_version") != "psycopg":
+            1/0
             return self.make_psycopg2_database_connection(register_composite_types=register_composite_types)
 
         else:
@@ -293,13 +301,17 @@ class ConfigWrapper(object):
 
             if isinstance(x, str):
 
-                warnings.warn("Stop it! Define logging configuration "
+                warnings.warn("Stop it! Define logging configuration in"
                     "the same YAML file!")
 
                 logging.config.fileConfig(
-                    pkg_resources.resource_filename(
-                        'horsemeat.configs.logging_configs',
-                        x))
+                    importlib.resources.files('horsemeat').joinpath("configs").joinpath("logging_configs"),
+                    x)
+
+                # logging.config.fileConfig(
+                #     pkg_resources.resource_filename(
+                #         'horsemeat.configs.logging_configs',
+                #         x))
 
             elif isinstance(x, dict):
                 logging.config.dictConfig(x)
