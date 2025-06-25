@@ -243,15 +243,21 @@ class Handler(object):
             if not hasattr(rp, "match"):
                 log.warning("This pattern {0!r} might not work right because it has no match method (i.e., it isn't a regex!).  You probably forgot to wrap it in re.compile...".format(rp))
 
-            match = req.line_one.test_for_match(rp)
+                # Just to be nice, let's check these as strings
+                if req.line_one == rp:
+                    return self.handle
 
-            if match:
+            else:
 
-                d = match.groupdict()
-                for k in d:
-                    req[k] = d[k]
+                match = rp.match(req.line_one)
 
-                return self.handle
+                if match:
+
+                    d = match.groupdict()
+                    for k in d:
+                        req[k] = d[k]
+
+                    return self.handle
 
     def check_route_strings(self, req):
 

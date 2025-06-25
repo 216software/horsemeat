@@ -596,7 +596,7 @@ class BiggerThanMemoryBuffer(ValueError):
     allowed amount to load into memory.
     """
 
-class LineOne(object):
+class LineOne(str):
 
     """
     Pretty much a boring old string, but can be compared against a
