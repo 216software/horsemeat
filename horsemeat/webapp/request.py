@@ -1,6 +1,5 @@
 # vim: set expandtab ts=4 sw=4 filetype=python fileencoding=utf8:
 
-import cgi
 import collections.abc
 import http.cookies
 import hashlib
@@ -519,7 +518,18 @@ class Request(collections.abc.MutableMapping):
     def parsed_content_type(self):
 
         if self.CONTENT_TYPE:
-            return cgi.parse_header(self.CONTENT_TYPE)
+
+            # cgi module is deprecated.
+            #
+            # return cgi.parse_header(self.CONTENT_TYPE)
+
+            # here is recommended new approach
+            # https://docs.python.org/3.11/library/cgi.html#cgi.parse_header
+
+            from email.message import EmailMessage
+            msg = EmailMessage()
+            msg["content-type"] = self.CONTENT_TYPE
+            return msg.get_params()
 
     @property
     def charset(self):
