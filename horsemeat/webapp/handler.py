@@ -241,7 +241,6 @@ class Handler(object):
         for rp in self.route_patterns:
 
             if not hasattr(rp, "match"):
-                log.warning("This pattern {0!r} might not work right because it has no match method (i.e., it isn't a regex!).  You probably forgot to wrap it in re.compile...".format(rp))
 
                 # Just to be nice, let's check these as strings
                 if req.line_one == rp:
