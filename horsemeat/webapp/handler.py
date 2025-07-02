@@ -236,7 +236,7 @@ class Handler(object):
         """
 
         if not self.route_patterns:
-            raise Exception("You need some route patterns!")
+            raise Exception(f"You need some route patterns in {self!r}!")
 
         for rp in self.route_patterns:
 
@@ -261,7 +261,7 @@ class Handler(object):
     def check_route_strings(self, req):
 
         if not self.route_strings:
-            raise Exception("You need to define some route strings!")
+            raise Exception(f"You need to define some route strings in handler {self!r}")
 
         if req.line_one in self.route_strings:
             return self.handle
