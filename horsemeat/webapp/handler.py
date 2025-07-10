@@ -285,37 +285,60 @@ class Handler(object):
 
         pass
 
+    @property
+    def four_zero_four_template(self):
+        return 'framework_templates/404.html'
+
     @staticmethod
     @decorator.decorator
-    def only_allow_superusers(handle_method, self, req):
+    def require_is_superuser(handler_method, self, req):
 
         """
         Add this to a handle method like this::
 
-            @Handler.only_allow_superusers
+            @Handler.require_is_superuser
             def handle(self, req):
                 ...
 
-        And then, if the request isn't from a signed-in superuser,
-        they'll get a JSON reply below.
+        And then, if the request isn't from a signed-in user that's got
 
-        If the request is from a signed-in superuser, then your handle
-        method is normal.
+            is_superuser = true
+
+        they'll get a JSON reply that says nope.
+
+        If the request is from a signed-in user, then your handle
+        method runs like normal.
         """
 
-        if not req.user or not req.user.is_superuser:
+        if not req.user:
 
-            return Response.json(dict(
-                message="Sorry, superusers only!",
-                success=False,
-                reply_timestamp=datetime.datetime.now()))
+            resp = self.Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message="Sorry, you need to log in first!",
+                needs_to_log_in=True,
+                success=False))
+
+            resp.status = '401 UNAUTHORIZED'
+
+            return resp
+
+        elif not req.user.is_superuser:
+
+            resp = self.Response.json(dict(
+                reply_timestamp=datetime.datetime.now(),
+                message=f"Sorry, {req.user.display_name}, this is for is_superuser == true accounts only",
+                needs_to_log_in=False,
+                success=False))
+
+            resp.status = '401 UNAUTHORIZED'
+
+            return resp
 
         else:
-            return handle_method(self, req)
 
-    @property
-    def four_zero_four_template(self):
-        return 'framework_templates/404.html'
+            log.debug("Returning...")
+
+            return handler_method(self, req)
 
     @staticmethod
     @decorator.decorator

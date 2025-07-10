@@ -479,13 +479,11 @@ class Request(collections.abc.MutableMapping):
     def user(self):
 
         """
-
         Is either None or is a bunch of data extracted from the
         database.
 
         When request.user is None, it means this is a user we don't
         know.
-
         """
 
         # First check if we already made one.

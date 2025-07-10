@@ -152,6 +152,7 @@ class Dispatcher(object):
                 log.critical('post body: {0}'.format(req.wz_req.form))
 
                 log.critical(environ)
+                log.critical(ex, exc_info=1)
 
                 if req.is_JSON:
 
