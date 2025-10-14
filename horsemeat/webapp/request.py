@@ -15,7 +15,10 @@ import urllib.parse
 import warnings
 import wsgiref.util
 
+from horsemeat import CookieWrapper
+
 from werkzeug.wrappers import Request as WerkzeugRequest
+from werkzeug.http import parse_cookie
 
 log = logging.getLogger(__name__)
 
@@ -94,13 +97,23 @@ class Request(collections.abc.MutableMapping):
         self['parsed_QS'] = parsed_qs
         return parsed_qs
 
+
     @property
     def parsed_cookie(self):
 
+        """
+        Switched from Simple Cookie to werkzeug cookie, with a cookie
+        wrapper to maintain functionality
+        """
+
         if self.HTTP_COOKIE:
-            c = http.cookies.SimpleCookie()
-            c.load(self.HTTP_COOKIE)
-            return c
+            #c = http.cookies.SimpleCookie()
+            #c.load(self.HTTP_COOKIE)
+
+            c = parse_cookie(self.HTTP_COOKIE)
+            if c:
+                return CookieWrapper(c)
+
 
     @property
     def body(self):

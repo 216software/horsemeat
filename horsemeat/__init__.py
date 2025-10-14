@@ -55,3 +55,38 @@ fancyjsondumps = functools.partial(
     sort_keys=True,
     indent=4,
     separators=(',', ': '))
+
+
+
+class CookieWrapper:
+
+    """
+    This CookieWrapper allows us to be backwards compatible with https
+    SimpleCookie.
+
+    We need to switch to werkzeug cookie because google and facebook
+    have recently been using malformed cookies, which breaks the reading
+    of our cookies
+
+    """
+
+
+    def __repr__(self):
+        return str(self._cookies)
+
+    def __init__(self, cookie_dict):
+        self._cookies = cookie_dict
+
+    def __getitem__(self, key):
+        return MockMorsel(self._cookies[key])
+
+    def __contains__(self, key):
+        return key in self._cookies
+
+    def get(self, key, default=None):
+        value = self._cookies.get(key, default)
+        return MockMorsel(value) if value is not None else None
+
+class MockMorsel:
+    def __init__(self, value):
+        self.value = value
