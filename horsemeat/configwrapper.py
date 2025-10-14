@@ -258,7 +258,7 @@ class ConfigWrapper(object):
         # Pretty quick, move to psycopg from psycopg2 but this is here
         # until I get tests passing.
         if self.config_dictionary["postgresql"].get("psycopg_version") != "psycopg":
-            1/0
+            log.warning("psycopg2 is fine but psycopg is the library that is going to keep getting better")
             return self.make_psycopg2_database_connection(register_composite_types=register_composite_types)
 
         else:
