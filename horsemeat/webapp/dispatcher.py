@@ -326,6 +326,10 @@ class Dispatcher(object):
         # classes, and then we won't need this wacky complex logic to
         # ignore some classes we get.  And we also will provide more
         # control about the order.
+        #
+        # OR: maybe there's a list inside the module (aka the .py file),
+        # and that list spells out the list of classes and the order to
+        # add.
 
         return [cls(self.config_wrapper, self)
 
@@ -343,7 +347,7 @@ class Dispatcher(object):
             # only have virtual (abstract) methods, so we should not
             # instantiate them.
             and getattr(cls.route, '__isabstractmethod__', False) is False
-            ]
+        ]
 
 
     @abc.abstractmethod
