@@ -536,7 +536,6 @@ class Response(object):
     def csv_file(cls, filelike, filename, FileWrap):
 
         """
-
         Here's an example usage::
 
             query = textwrap.dedent('''
@@ -548,11 +547,10 @@ class Response(object):
                 ''')
 
             tf = tempfile.NamedTemporaryFile()
-
             cursor.copy_expert(query, tf)
 
             return Response.csv_file(filelike=tf,
-                                     filename='csv-data',
+                                     filename='csv-data.csv',
                                      FileWrap=req.environ['wsgi.file_wrapper'])
 
         """
