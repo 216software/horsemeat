@@ -58,7 +58,7 @@ class Dispatcher(object):
         self.make_handlers()
         self.run_all_on_startup_methods()
 
-        log.info("Dispatcher __init__ complete!  Framework is ready.")
+        log.debug("Dispatcher __init__ complete!  Framework is ready.")
 
     @property
     def cw(self):
@@ -85,7 +85,7 @@ class Dispatcher(object):
             self.jinja2_environment.globals['request'] = req
             self.jinja2_environment.globals['req'] = req
 
-            log.info('Got request {0} {1} from {2}'.format(
+            log.debug('Got request {0} {1} from {2}'.format(
                 req.REQUEST_METHOD,
                 req.path_and_qs,
                 req.client_IP_address))
@@ -131,10 +131,10 @@ class Dispatcher(object):
                 log.critical('Replying with status %s.\n' % resp.status)
 
             elif resp.status.startswith('30'):
-                log.info('Redirecting to {0}.'.format(resp.headers))
+                log.debug('Redirecting to {0}.'.format(resp.headers))
 
             else:
-                log.info('Replying with status %s.\n' % resp.status)
+                log.debug('Replying with status %s.\n' % resp.status)
 
             return resp.body
 
@@ -173,7 +173,7 @@ class Dispatcher(object):
 
                     start_response(resp.status, resp.headers)
 
-                    log.info('Replying with status %s.\n' % resp.status)
+                    log.debug('Replying with status %s.\n' % resp.status)
 
                     return resp.body
 
@@ -212,7 +212,7 @@ class Dispatcher(object):
                 # preferred behavior.
                 if callable(thing):
 
-                    log.info(
+                    log.debug(
                         'Dispatching to {0}.{1}.{2}.'.format(
                         candidate.__class__.__module__,
                         candidate.__class__.__name__,
@@ -228,7 +228,7 @@ class Dispatcher(object):
                         'Return self.handle rather than self',
                         DeprecationWarning)
 
-                    log.info(
+                    log.debug(
                         'Dispatching to {0}.{1}.{2}.'.format(
                         candidate.__class__.__module__,
                         candidate.__class__.__name__,
@@ -367,4 +367,4 @@ class Dispatcher(object):
 
         self.cw.get_pgconn().commit()
 
-        log.info("All on-startup methods ran and database committed.")
+        log.debug("All on-startup methods ran and database committed.")
