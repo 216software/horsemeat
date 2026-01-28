@@ -8,6 +8,7 @@ import inspect
 import logging
 import sys
 import warnings
+import textwrap
 import traceback
 
 import jinja2
@@ -141,20 +142,35 @@ class Dispatcher(object):
         except Exception as ex:
 
             self.pgconn.rollback()
-            log.critical(ex, exc_info=1)
+            #log.critical(ex, exc_info=1)
+
+            # let's build up the error
+            error_text = textwrap.dedent(f"""
+                address bar : {req.address_bar}
+                post body: {req.wz_req.form}
+                json : {req.json}
+                environ: {environ}
+
+                exception traceback:
+
+                {traceback.format_exc()}
+
+            """)
+
+            log.critical(error_text)
 
             if self.cw.launch_debugger_on_error:
                 raise
 
             else:
 
-                log.critical('address bar: {0}'.format(req.address_bar))
-                log.critical('post body: {0}'.format(req.wz_req.form))
+                #log.critical('address bar: {0}'.format(req.address_bar))
+                #log.critical('post body: {0}'.format(req.wz_req.form))
 
-                log.critical(environ)
-                log.critical(ex, exc_info=1)
+                #log.critical(environ)
+                #log.critical(ex, exc_info=1)
 
-                if req.is_JSON:
+                if req.is_JSON and self.response_class:
 
                     resp = self.response_class.json(dict(
                         reply_timestamp=datetime.datetime.now(),
