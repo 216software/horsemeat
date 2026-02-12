@@ -575,6 +575,14 @@ class ConfigWrapper(object):
     def webapp_timeout_secs(self):
         return self.config_dictionary["app"].get("webapp_timeout", 30)
 
+    @property
+    def update_expires(self):
+        """
+        If True, then we keep bumping the webapp_session expires column
+        so that people stay logged in
+        """
+
+        return self.config_dictionary["app"].get("update_expires", False)
 
 class MissingConfig(KeyError):
 

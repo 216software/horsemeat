@@ -108,12 +108,10 @@ class Dispatcher(object):
             # TODO: bring this back, but make it controlled by a setting
             # in the yaml file, like:
 
-            # if req.user and cw.update_session_expires_time:
+            if req.user and cw.update_expires:
 
-            # if req.user:
-
-                # new_expires_time = req.session.maybe_update_session_expires_time(
-                #    self.pgconn)
+                new_expires_time = req.session.maybe_update_session_expires_time(
+                   self.pgconn)
 
             # This is to commit all the changes made in the handlers.
             self.pgconn.commit()
