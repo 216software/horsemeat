@@ -105,11 +105,17 @@ class Dispatcher(object):
                 resp.mark_news_message_as_expired()
 
             # Update the signed-in user's session expires column.
-            if req.user:
+            # TODO: bring this back, but make it controlled by a setting
+            # in the yaml file, like:
 
-                new_expires_time = req.session.maybe_update_session_expires_time(
-                    self.pgconn)
+            # if req.user and cw.update_session_expires_time:
 
+            # if req.user:
+
+                # new_expires_time = req.session.maybe_update_session_expires_time(
+                #    self.pgconn)
+
+            # This is to commit all the changes made in the handlers.
             self.pgconn.commit()
 
             if self.enable_access_control:
